@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Prezentacja</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            background: #0c1a24;
+            color: #fff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .presentation-container {
+            max-width: 900px;        
+            min-height: 480px;    
+            margin: 100px auto 0 auto; 
+            box-shadow: 0 4px 28px #0007;
+            border-radius: 20px;
+            background: #153050;
+            padding: 36px 28px 32px 28px; 
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .slide {
+            display: none;
+            text-align: center;
+            min-height: 220px;
+        }
+        .slide.active {
+            display: block;
+        }
+        .slide h2 {
+            color: #ff9900;
+            margin-top: -30px;
+            margin-bottom: 18px;
+            font-size: 2em;
+            letter-spacing: 1px;
+        }
+            .zwezony-tekst {
+                width: 500px;       
+        }
+        .slide ul, .slide ol {
+            text-align: left;
+            display: inline-block;
+            margin: 30px auto 0 auto;
+            padding-left: 18px;
+            font-size: 1em;
+            max-width: 400px;   
+            margin-left: -200px;    
+            margin-right: auto;
+        }
+        .slide ol.rodzaje { 
+            max-width: 650px;
+            margin-left: 20px;   
+            margin-right: auto;
+        }
+        .slide img {
+            max-width: 400px;
+            margin: 40px auto 0 auto;
+            display: block;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px #0007;
+        }
+            .slide img.bez-ramki {
+                max-width: 120px;
+                margin-top: -160px;
+                margin-left: 610px;
+                border-radius: 0;
+                box-shadow: none;
+            }
+        .slide-number {
+            position: absolute;
+            bottom: 14px;
+            right: 28px;
+            color: #ff9900;
+            font-size: 1em;
+            opacity: 0.8;
+        }
+        .slide-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2em;
+            cursor: pointer;
+            color: #ff9900;
+            opacity: 0.8;
+            user-select: none;
+            padding: 10px 7px;
+            border-radius: 50%;
+            transition: background 0.2s;
+            z-index: 10;
+        }
+        .slide-arrow.left { left: 10px; }
+        .slide-arrow.right { right: 10px; }
+        .slide-arrow:hover {
+            background: #ff9900;
+            color: #153050;
+            opacity: 1;
+        }
+            .slide p {
+                max-width: 800px;  
+                margin-left: auto;
+                margin-right: auto;
+                text-align: center;
+            }
+
+        @media (max-width: 950px) {
+            .presentation-container {
+                max-width: 98vw;
+                padding: 16px 2vw 16px 2vw;
+            }
+        }
+        @media (max-width: 700px) {
+            .presentation-container {
+                min-height: 200px;
+                padding: 8px 1vw 10px 1vw;
+            }
+            .slide img {
+                max-width: 90vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide active">
+            <h2>Elektrownie Parowe – Wprowadzenie</h2>
+            <p>Elektrownie parowe są jednymi z najstarszych i najbardziej rozpowszechnionych typów elektrowni na świecie. Ich głównym zadaniem jest przekształcanie energii cieplnej, pochodzącej ze spalania paliwa (lub innych źródeł ciepła), w energię elektryczną. Proces ten opiera się na cyklu Rankine'a, wykorzystującym parę wodną jako czynnik roboczy.</p>
+            <img src="Elektrownie parowe.png" alt="Elektrownie Parowe">
+        </div>
+        <div class="slide">
+            <h2>Zasada działania</h2>
+            <p>Elektrownia parowa działa na zasadzie przemiany energii cieplnej w energię elektryczną przy użyciu pary wodnej. W pierwszym etapie w kotle spalane jest paliwo, najczęściej węgiel kamienny lub brunatny, co powoduje wytworzenie dużej ilości ciepła. To ciepło służy do podgrzania wody, która zamienia się w parę wodną pod wysokim ciśnieniem i temperaturą.</p>
+            <p>Para wodna kierowana jest następnie na turbinę parową. Uderzając w jej łopatki, wprawia je w ruch obrotowy. Turbina połączona jest z generatorem, który przekształca energię mechaniczną z turbiny w energię elektryczną. Po przejściu przez turbinę para trafia do skraplacza, gdzie zostaje schłodzona i ponownie zamienia się w wodę. Woda ta wraca do kotła i cały cykl rozpoczyna się od nowa.</p>
+        </div>
+        <div class="slide">
+            <h2>Zalety elektrowni parowych</h2>
+            <ul>
+                <li>Sprawdzona Technologia: Elektrownie parowe są technologią dojrzałą i dobrze opanowaną.</li>
+                <li>Duża Moc: Mogą generować bardzo duże ilości energii elektrycznej.</li>
+                <li>Ciągła Praca: Mogą pracować w sposób ciągły, niezależnie od warunków pogodowych (w przeciwieństwie do elektrowni słonecznych czy wiatrowych).</li>
+            </ul>
+            <img src="Zalety.png" class="bez-ramki">
+        </div>
+        <div class="slide">
+            <h2>Wady elektrowni parowych</h2>
+            <ul>
+                <li>Emisje (dla paliw kopalnych): Spalanie paliw kopalnych prowadzi do emisji gazów cieplarnianych (CO<sub>2</sub>) i innych zanieczyszczeń powietrza.</li>
+                <li>Zużycie Wody: Wymagają dużych ilości wody do chłodzenia.</li>
+                <li>Niska sprawność w porównaniu do elektrowni gazowych lub jądrowych</li>
+            </ul>
+            <img src="Wady.png" class="bez-ramki">
+        </div>
+        <div class="slide">
+            <h2>Rodzaje Elektrowni Parowych</h2>
+            <ol class="rodzaje">
+                <li>Elektrownie Konwencjonalne (Cieplne): Wykorzystują spalanie paliw kopalnych (węgiel, gaz, ropa) do wytwarzania pary.</li>
+                <li>Elektrownie Jądrowe: Wykorzystują ciepło z reakcji rozszczepienia jąder atomowych do podgrzewania wody i wytwarzania pary.</li>
+                <li>Elektrownie Geotermalne: Wykorzystują naturalne ciepło z wnętrza Ziemi do wytwarzania pary.</li>
+                <li>Elektrownie Słoneczne: Skupiają światło słoneczne, aby podgrzać płyn, który następnie wytwarza parę.</li>
+            </ol>
+        </div>
+        <div class="slide">
+            <h2>Podsumowanie</h2>
+            <p class="zwezony-tekst">Elektrownie parowe odgrywają kluczową rolę w globalnym zaopatrzeniu w energię. Chociaż te oparte na paliwach kopalnych stoją przed wyzwaniami związanymi z emisjami, rozwój technologii (np. wychwyt CO<sub>2</sub>, czystsze paliwa, odnawialne źródła ciepła) ma na celu zmniejszenie ich wpływu na środowisko.</p>
+        </div>
+        <div class="slide">
+            <section>
+                <h2>Źródła</h2>
+            <ol class="rodzaje">
+                <li><a href="https://pl.wikipedia.org/wiki/Elektrownia_parowa">https://pl.wikipedia.org/wiki/Elektrownia_parowa</a></li>
+                <li><a href="https://www.boiler-planning.com/pl/technika/para/zalety-i-wady-systemw-parowych.html">https://www.boiler-planning.com/pl/technika/para/zalety-i-wady-systemw-parowych.html</a></li>
+                <li><a href="https://www.youtube.com/watch?v=aT8CHCWc2Ww">https://www.youtube.com/watch?v=aT8CHCWc2Ww</a></li>
+            </ol>
+        </section>
+        </div>
+        <span class="slide-arrow left" onclick="prevSlide()" title="Poprzedni slajd">&#8592;</span>
+        <span class="slide-arrow right" onclick="nextSlide()" title="Następny slajd">&#8594;</span>
+        <div class="slide-number" id="slideNumber"></div>
+    </div>
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        let currentSlide = 0;
+        const slideNumber = document.getElementById('slideNumber');
+
+        function showSlide(index) {
+            if(index < 0) index = slides.length - 1;
+            if(index >= slides.length) index = 0;
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+            currentSlide = index;
+            slideNumber.textContent = `Slajd ${currentSlide + 1} / ${slides.length}`;
+        }
+
+        function nextSlide() { showSlide(currentSlide + 1); }
+        function prevSlide() { showSlide(currentSlide - 1); }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === "ArrowRight") nextSlide();
+            if (e.key === "ArrowLeft") prevSlide();
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>

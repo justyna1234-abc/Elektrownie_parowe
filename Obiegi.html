@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Obieg</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      background: #0c1a24;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      color: #fff;
+      margin-top: 80px;
+      margin-bottom: 12px;
+      text-shadow: 2px 2px 8px #000a;
+      width: 100%;
+      text-align: center;
+    }
+    .main-flex {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 32px;
+      width: 100%;
+      max-width: 1400px;
+      margin-bottom: 24px;
+    }
+    .canvas-col {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-left: -90px;
+      padding-left: 200px;
+      margin-top: 80px;
+    }
+    .canvas-box {
+      margin-bottom: 0;
+      display: none;
+    }
+    .canvas-box.active {
+      display: block;
+    }
+    .controls {
+      display: flex;
+      gap: 18px;
+      margin-bottom: 0;
+      margin-top: 24px;
+      justify-content: center;
+      width: 100%;
+    }
+    .controls button {
+      background: #ff9900;
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      padding: 9px 22px;
+      font-size: 1.08em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 2px 8px #0004;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .controls button.active, .controls button:hover {
+      background: #ffb84d;
+      color: #232834;
+    }
+    canvas {
+      background: #fff;
+      border: 2px solid #ff9900;
+      margin: 0;
+      border-radius: 18px;
+      box-shadow: 0 4px 24px #0005;
+      display: block;
+    }
+    .text-col {
+      flex: 0 0 800px;
+      min-width: 200px;
+      max-width: 800px;
+      margin-top: 55px;
+      margin-left: -5px;
+      color: #fde4b0;
+      font-size: 1.08em;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      border-radius: 13px;
+      padding: 20px 36px 18px 36px;
+      line-height: 1.44;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      text-align: center;
+      height: 340px;
+      margin-right: 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .text-static {
+      font-size: 1em;
+      color: #ffb84d;
+      margin-bottom: 20px;
+    }
+    .text-dynamic ul {
+        margin: 0;
+        padding: 0;
+    }
+    .desc-li {
+        margin-top: 0;   
+        color: #fff; 
+        font-size: 0.85em;   
+        margin-bottom: 7px;
+        padding: 0;
+    }
+    .comic-footer {
+      width: 100vw;
+      text-align: center;
+      color: #ffb547;
+      font-size: 0.7em;
+      margin-top: 30px;
+      margin-bottom: 10px;
+      letter-spacing: 0.2px;
+      padding-bottom: 18px;
+    }
+     .comic-footer a {
+      color: #ffb547;
+      text-decoration: underline; 
+    }
+    @media (max-width: 1400px) {
+      .main-flex { max-width: 100vw; }
+      .text-col { max-width: 98vw; }
+    }
+    @media (max-width: 900px) {
+      .main-flex { flex-direction: column; align-items: center; }
+      .canvas-col { align-items: center; margin-left: 0; padding-left: 0; }
+      .text-col { margin-left: 0; margin-top: 30px; height: auto; max-width: 98vw; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Obieg Rankine’a</h1>
+  <div class="main-flex">
+    <div class="canvas-col">
+      <div class="canvas-box active" id="boxTs">
+        <canvas id="canvasTs" width="520" height="340"></canvas>
+      </div>
+      <div class="canvas-box" id="boxPv">
+        <canvas id="canvasPv" width="520" height="340"></canvas>
+      </div>
+      <div class="controls">
+        <button id="btnTs" class="active" onclick="showPlot('Ts')">Wykres T-s</button>
+        <button id="btnPv" onclick="showPlot('Pv')">Wykres p-v</button>
+      </div>
+    </div>
+    <div class="text-col">
+      <div class="text-static">
+        Przedstawione wykresy przedstawiają przebieg idealnego cyklu termodynamicznego w dwóch różnych układach współrzędnych: p–V (ciśnienie–objętość) oraz T–s (temperatura–entropia). Analiza cyklu w obu układach pozwala na pełniejsze zrozumienie procesów zachodzących w czasie pracy urządzeń cieplnych, takich jak turbiny, pompy, skraplacze czy kotły.
+      </div>
+      <div class="text-dynamic" id="textCol">
+        <ul style="list-style-type: none; text-align:left; display:inline-block; padding-left:0;">
+          <li class="desc-li">- Odcinek 1–2: Rozprężanie izentropowe – entropia stała, spadek temperatury (turbinia).</li>
+          <li class="desc-li">- Odcinek 2–3: Skraplanie izobaryczne – spadek temperatury przy stałym ciśnieniu (skraplacz).</li>
+          <li class="desc-li">- Odcinek 3–4: Sprężanie izentropowe – wzrost ciśnienia i temperatury przy stałej entropii (pompa).</li>
+          <li class="desc-li">- Odcinek 4–5: Ogrzewanie izobaryczne – wzrost temperatury przy stałym ciśnieniu (kocioł/parownik).</li>
+          <li class="desc-li">- Odcinek 5–6: Przegrzewanie pary – dalszy wzrost temperatury przy stałym ciśnieniu.</li>
+          <li class="desc-li">- Odcinek 6–1: Rozprężanie izobaryczne – powrót do punktu początkowego.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <script>
+    function getPointsTs(ox, oy, axisW, axisH) {
+      return [
+        { x: ox + axisW * 0.88, y: oy - axisH * 0.95}, // w1
+        { x: ox + axisW * 0.88, y: oy - axisH * 0.12 }, // w2
+        { x: ox + axisW * 0.13, y: oy - axisH * 0.12 }, // w3
+        { x: ox + axisW * 0.13, y: oy - axisH * 0.23 }, // w4
+        { x: ox + axisW * 0.25, y: oy - axisH * 0.60 }, // w5
+        { x: ox + axisW * 0.77, y: oy - axisH * 0.60 }, // w6
+      ];
+    }
+    function drawDiagramTs(ctx) {
+      ctx.clearRect(0,0,520,340);
+      const ox = 60, oy = 270, axisW = 410, axisH = 200;
+
+      ctx.save();
+      ctx.strokeStyle = "#222";
+      ctx.lineWidth = 2.7;
+      ctx.beginPath();
+      ctx.moveTo(ox, oy + 35);
+      ctx.lineTo(ox, oy - axisH - 20);
+      ctx.moveTo(ox - 35, oy);
+      ctx.lineTo(ox + axisW + 35, oy);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(ox, oy - axisH - 20);
+      ctx.lineTo(ox - 8, oy - axisH - 4);
+      ctx.moveTo(ox, oy - axisH - 20);
+      ctx.lineTo(ox + 8, oy - axisH - 4);
+      ctx.moveTo(ox + axisW + 35, oy);
+      ctx.lineTo(ox + axisW + 19, oy - 8);
+      ctx.moveTo(ox + axisW + 35, oy);
+      ctx.lineTo(ox + axisW + 19, oy + 8);
+      ctx.stroke();
+      ctx.font = "bold 26px Arial";
+      ctx.fillStyle = "#222";
+      ctx.fillText("T", ox - 25, oy - axisH - 30);
+      ctx.fillText("s", ox + axisW + 29, oy + 28);
+      ctx.restore();
+
+      const pts = getPointsTs(ox, oy, axisW, axisH);
+      ctx.save();
+      ctx.lineWidth = 3.5;
+      ctx.strokeStyle = "#1791e5";
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pts[0].y);
+      ctx.lineTo(pts[1].x, pts[1].y);
+      ctx.lineTo(pts[2].x, pts[2].y);
+      ctx.lineTo(pts[3].x, pts[3].y);
+
+      const ctrl54x = (pts[4].x + pts[3].x) / 2 + 25;
+      const ctrl54y = (pts[4].y + pts[3].y) / 2 - 25;
+      ctx.quadraticCurveTo(ctrl54x, ctrl54y, pts[4].x, pts[4].y);
+
+      ctx.lineTo(pts[5].x, pts[5].y);
+      ctx.lineTo(pts[0].x, pts[0].y);
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.save();
+      ctx.fillStyle = "#111";
+      for (let i = 0; i < pts.length; ++i) {
+        ctx.beginPath();
+        ctx.arc(pts[i].x, pts[i].y, 5, 0, 2 * Math.PI);
+        ctx.fill();
+      }
+      ctx.restore();
+
+      ctx.save();
+      ctx.font = "19px Arial";
+      ctx.fillStyle = "#111";
+      const ozn = ["1","2","3","4","5","6"];
+      const dx = [10, 10, -20, -20, -20, -16];
+      const dy = [2, 18, 18, -6, -12, -12];
+      for (let i = 0; i < pts.length; ++i) {
+        ctx.fillText(ozn[i], pts[i].x + dx[i], pts[i].y + dy[i]);
+      }
+      ctx.restore();
+    }
+
+    function getPointsPv(ox, oy, axisW, axisH) {
+      return [
+        { x: ox + axisW * 0.60, y: oy - axisH * 0.85 }, // p1
+        { x: ox + axisW * 0.78, y: oy - axisH * 0.12},   // p2
+        { x: ox + axisW * 0.15, y: oy - axisH * 0.12},   // p3
+        { x: ox + axisW * 0.15, y: oy - axisH * 0.85 },  // p4
+      ];
+    }
+    function drawDiagramPv(ctx) {
+      ctx.clearRect(0,0,520,340);
+      const ox = 60, oy = 270, axisW = 410, axisH = 200;
+
+      ctx.save();
+      ctx.strokeStyle = "#222";
+      ctx.lineWidth = 2.7;
+      ctx.beginPath();
+      ctx.moveTo(ox, oy + 35);
+      ctx.lineTo(ox, oy - axisH - 20);
+      ctx.moveTo(ox - 35, oy);
+      ctx.lineTo(ox + axisW + 35, oy);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(ox, oy - axisH - 20);
+      ctx.lineTo(ox - 8, oy - axisH - 4);
+      ctx.moveTo(ox, oy - axisH - 20);
+      ctx.lineTo(ox + 8, oy - axisH - 4);
+      ctx.moveTo(ox + axisW + 35, oy);
+      ctx.lineTo(ox + axisW + 19, oy - 8);
+      ctx.moveTo(ox + axisW + 35, oy);
+      ctx.lineTo(ox + axisW + 19, oy + 8);
+      ctx.stroke();
+      ctx.font = "bold 26px Arial";
+      ctx.fillStyle = "#222";
+      ctx.fillText("p", ox - 25, oy - axisH - 30);
+      ctx.fillText("v", ox + axisW + 29, oy + 28);
+      ctx.restore();
+
+      const pts = getPointsPv(ox, oy, axisW, axisH);
+      ctx.save();
+      ctx.lineWidth = 3.5;
+      ctx.strokeStyle = "#1791e5";
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pts[0].y);
+      const controlX = (pts[0].x + pts[1].x) / 2 - 20;
+      const controlY = (pts[0].y + pts[1].y) / 2 + 20;
+      ctx.quadraticCurveTo(controlX, controlY, pts[1].x, pts[1].y);
+      for (let i = 2; i < pts.length; ++i) ctx.lineTo(pts[i].x, pts[i].y);
+      ctx.lineTo(pts[0].x, pts[0].y);
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.save();
+      ctx.fillStyle = "#111";
+      for (let i = 0; i < pts.length; ++i) {
+        ctx.beginPath();
+        ctx.arc(pts[i].x, pts[i].y, 5, 0, 2 * Math.PI);
+        ctx.fill();
+      }
+      ctx.restore();
+
+      ctx.save();
+      ctx.font = "19px Arial";
+      ctx.fillStyle = "#111";
+      const ozn = ["1","2","3","4"];
+      const dx = [10, 10, -27, -25];
+      const dy = [-6, 15, 15, -6];
+      for (let i = 0; i < pts.length; ++i) {
+        ctx.fillText(ozn[i], pts[i].x + dx[i], pts[i].y + dy[i]);
+      }
+      ctx.restore();
+    }
+
+    function showPlot(which) {
+      document.getElementById('btnTs').classList.toggle('active', which === 'Ts');
+      document.getElementById('btnPv').classList.toggle('active', which === 'Pv');
+      document.getElementById('boxTs').classList.toggle('active', which === 'Ts');
+      document.getElementById('boxPv').classList.toggle('active', which === 'Pv');
+      const textCol = document.getElementById('textCol');
+      if (which === 'Ts') {
+        textCol.innerHTML = `
+          <ul style="list-style-type: none; text-align:left; display:inline-block; padding-left:0;">
+            <li class="desc-li">- Odcinek 1–2: Rozprężanie izentropowe – entropia stała, spadek temperatury (turbinia).</li>
+            <li class="desc-li">- Odcinek 2–3: Skraplanie izobaryczne – spadek temperatury przy stałym ciśnieniu (skraplacz).</li>
+            <li class="desc-li">- Odcinek 3–4: Sprężanie izentropowe – wzrost ciśnienia i temperatury przy stałej entropii (pompa).</li>
+            <li class="desc-li">- Odcinek 4–5: Ogrzewanie izobaryczne – wzrost temperatury przy stałym ciśnieniu (kocioł/parownik).</li>
+            <li class="desc-li">- Odcinek 5–6: Przegrzewanie pary – dalszy wzrost temperatury przy stałym ciśnieniu.</li>
+            <li class="desc-li">- Odcinek 6–1: Rozprężanie izobaryczne – powrót do punktu początkowego.</li>
+          </ul>
+        `;
+      } else {
+        textCol.innerHTML = `
+          <ul style="list-style-type: none; text-align:left; display:inline-block; padding-left:0;">
+            <li class="desc-li">- Odcinek 1–2: Rozprężanie izentropowe – spadek ciśnienia i wzrost objętości (turbina).</li>
+            <li class="desc-li">- Odcinek 2–3: Skraplanie izobaryczne – zmniejszenie objętości przy stałym ciśnieniu (skraplacz).</li>
+            <li class="desc-li">- Odcinek 3–4: Sprężanie izentropowe – wzrost ciśnienia i spadek objętości (pompa).</li>
+            <li class="desc-li">- Odcinek 4–1: Ogrzewanie izobaryczne – wzrost objętości przy stałym ciśnieniu (kocioł).</li>
+          </ul>
+        `;
+      }
+    }
+    drawDiagramTs(document.getElementById('canvasTs').getContext('2d'));
+    drawDiagramPv(document.getElementById('canvasPv').getContext('2d'));
+  </script>
+  <div class="comic-footer">
+    Źródło: <a href="https://www.electrical4u.com/rankine-cycle-efficiency-improvement-techniques/" target="_blank" rel="noopener">https://www.electrical4u.com/rankine-cycle-efficiency-improvement-techniques/</a>
+  </div>
+</body>
+</html>

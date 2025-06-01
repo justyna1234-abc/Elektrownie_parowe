@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Historia</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    html, body {
+      width: 100vw;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      background: #0c1a24;
+      overflow-x: hidden;
+    }
+    body {
+      width: 100vw;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      box-sizing: border-box;
+      background: #181f2b;
+    }
+    h1 {
+      color: #fff;
+      margin-top: 38px;
+      margin-bottom: 12px;
+      text-shadow: 2px 2px 8px #000a;
+      font-weight: 600;
+      text-align: center;
+      letter-spacing: 1px;
+      width: 100vw;
+    }
+    .timeline-canvas-box {
+      background: transparent;
+      border-radius: 0;
+      box-shadow: none;
+      margin-bottom: 0;
+      width: 100vw;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow-x: auto;
+      overflow-y: visible;
+      min-height: 400px;
+      border: none;
+    }
+    #timelineCanvas {
+      display: block;
+      background: transparent;
+      margin: 0 auto;
+      width: 100vw;
+      max-width: 100vw;
+      height: 900px;
+      min-width: 700px;
+      min-height: 600px;
+    }
+    .timeline-footer {
+      width: 100vw;
+      text-align: center;
+      color: #b3b3b3;
+      font-size: 0.7em;
+      margin-top: 38px;
+      margin-bottom: 12px;
+      letter-spacing: 0.2px;
+      padding-bottom: 18px;
+    }
+    .timeline-footer a {
+      color: #fca326;
+      text-decoration: underline;
+    }
+    @media (max-width: 900px) {
+      #timelineCanvas {
+        width: 100vw;
+        min-width: 700px;
+        height: 1200px;
+        min-height: 800px;
+      }
+      .timeline-canvas-box {
+        min-height: 600px;
+      }
+    }
+    @media (max-width: 700px) {
+      #timelineCanvas {
+        width: 100vw;
+        min-width: 500px;
+        height: 1600px;
+        min-height: 1000px;
+      }
+      .timeline-canvas-box {
+        min-height: 900px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Chronologia powstawania elektrowni zawodowych w Polsce</h1>
+  <div class="timeline-canvas-box">
+    <canvas id="timelineCanvas"></canvas>
+  </div>
+  <div class="timeline-footer">
+    Źródło: 
+    <a href="https://pl.wikipedia.org/wiki/Lista_elektrowni_w_Polsce" target="_blank" rel="noopener">
+      wikipedia.org/wiki/Elektrownia_w_Polsce
+    </a>
+  </div>
+  <script>
+    const events = [
+      { date: "1917", label: "Elektrownia Łaziska (Łaziska Górne)" },
+      { date: "1953", label: "Elektrownia Jaworzno II" },
+      { date: "1957–1961", label: "Elektrownia Skawina" },
+      { date: "1962", label: "Elektrownia Turów (Bogatynia)" },
+      { date: "1963", label: "Elektrownia Łagisza (Będzin)" },
+      { date: "1964", label: "Elektrownia Adamów (Turek)" },
+      { date: "1967", label: "Elektrownia Pątnów I (Konin)" },
+      { date: "1969", label: "Elektrownia Siersza (Trzebinia)" },
+      { date: "1972", label: "Elektrownia Rybnik" },
+      { date: "1972", label: "Elektrownia Ostrołęka B" },
+      { date: "1973", label: "Elektrownia Kozienice (Świerże Górne)" },
+      { date: "1974", label: "Elektrownia Dolna Odra (Nowe Czarnowo)" },
+      { date: "1976", label: "Elektrownia Jaworzno III" },
+      { date: "1981", label: "Elektrownia Bełchatów" },
+      { date: "2008", label: "Elektrownia Pątnów II (Konin)" },
+      { date: "2021", label: "Nowy blok Elektrowni Jaworzno III (910 MW)" }
+    ];
+
+    const canvas = document.getElementById('timelineCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let glowPhase = 0;
+    let currentEventIdx = 0;
+    let mainPhase = 0;
+    let branchPhase = 0;
+    let runningToBranch = false;
+    let lastTimestamp = null;
+    let waitAfterEvent = 0;
+
+    function getCanvasSizes() {
+      const w = window.innerWidth;
+      let minW = 700;
+      let height = 900; 
+      if (w < 900) {
+        minW = 500;
+        height = 1200;
+      }
+      if (w < 700) {
+        minW = 500;
+        height = 1600;
+      }
+      const eventsCount = events.length;
+      height = Math.max(height, eventsCount * (window.innerWidth < 700 ? 52 : 28) + 100);
+      return { width: Math.max(window.innerWidth, minW), height };
+    }
+
+    function drawTimeline(glowAlphas, lightedIdx, mainPhase, branchPhase, runningToBranch) {
+      const { width, height } = getCanvasSizes();
+      canvas.width = width;
+      canvas.height = height;
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      const marginX = width < 700 ? 130 : 220;
+      const x = Math.floor(canvas.width / 2);
+      const startY = 65;
+      const endY = canvas.height - 50;
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x, startY);
+      ctx.lineTo(x, endY);
+      ctx.strokeStyle = "#fca326";
+      ctx.lineWidth = 8;
+      ctx.shadowColor = "#fca32677";
+      ctx.shadowBlur = 10;
+      ctx.stroke();
+      ctx.restore();
+
+      const N = events.length;
+      const gap = (endY - startY) / (N-1);
+
+      let dateFont = width < 700 ? "bold 14px Arial" : "bold 17px Arial";
+      let descFont = width < 700 ? "13px Arial" : "15px Arial";
+      let circleR = width < 700 ? 11 : 13;
+      let lineW = width < 700 ? 2.2 : 3.2;
+      let dotBorder = width < 700 ? 3 : 4;
+
+      let activeMainY =
+        mainPhase < 1
+          ? startY + mainPhase * (endY - startY)
+          : endY;
+
+      ctx.save();
+      let grad = ctx.createRadialGradient(x, activeMainY, 0, x, activeMainY, 19);
+      grad.addColorStop(0, "rgba(255,255,180,0.93)");
+      grad.addColorStop(0.4, "rgba(252,163,38,0.62)");
+      grad.addColorStop(1, "rgba(255,255,180,0)");
+      ctx.beginPath();
+      ctx.arc(x, activeMainY, 19, 0, 2*Math.PI);
+      ctx.globalAlpha = 0.7;
+      ctx.fillStyle = grad;
+      ctx.fill();
+      ctx.restore();
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(x, activeMainY, 7, 0, 2 * Math.PI);
+      ctx.fillStyle = "rgba(255,255,180,0.91)";
+      ctx.shadowColor = "#fffad9";
+      ctx.shadowBlur = 8;
+      ctx.fill();
+      ctx.restore();
+
+      for (let i = 0; i < N; ++i) {
+        const cy = Math.floor(startY + i * gap);
+        const isLeft = i % 2 === 0;
+        const px = isLeft ? x - marginX : x + marginX;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(x, cy);
+        ctx.lineTo(px, cy);
+        ctx.lineWidth = lineW;
+        ctx.strokeStyle = "#fca326";
+        ctx.setLineDash([10,4]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.restore();
+
+        if (i === lightedIdx && runningToBranch) {
+          let bx = x + (px - x) * branchPhase;
+          ctx.save();
+          let grad2 = ctx.createRadialGradient(bx, cy, 0, bx, cy, 14);
+          grad2.addColorStop(0, "rgba(255,255,180,0.92)");
+          grad2.addColorStop(0.5, "rgba(252,163,38,0.55)");
+          grad2.addColorStop(1, "rgba(255,255,180,0)");
+          ctx.beginPath();
+          ctx.arc(bx, cy, 14, 0, 2 * Math.PI);
+          ctx.globalAlpha = 0.7;
+          ctx.fillStyle = grad2;
+          ctx.fill();
+          ctx.restore();
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(bx, cy, 6, 0, 2 * Math.PI);
+          ctx.fillStyle = "rgba(255,255,180,0.89)";
+          ctx.shadowColor = "#fffad9";
+          ctx.shadowBlur = 8;
+          ctx.fill();
+          ctx.restore();
+        }
+
+        let glowAlpha = glowAlphas[i] || 0;
+        let waitingToLight = (i === lightedIdx && runningToBranch && branchPhase < 1);
+
+        if (waitingToLight) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(px, cy, circleR, 0, 2 * Math.PI);
+          ctx.fillStyle = "#2c2c2c";
+          ctx.shadowColor = "#3a2d13";
+          ctx.shadowBlur = 8;
+          ctx.strokeStyle = "#ad7a2c";
+          ctx.lineWidth = dotBorder;
+          ctx.fill();
+          ctx.stroke();
+          ctx.restore();
+        } else if (glowAlpha > 0.01) {
+          let glowRadius = 36 + 8 * Math.sin(glowPhase * Math.PI);
+          ctx.save();
+          const gradient = ctx.createRadialGradient(
+            px, cy, circleR * 0.7,
+            px, cy, glowRadius
+          );
+          gradient.addColorStop(0, `rgba(252,163,38,${0.45*glowAlpha})`);
+          gradient.addColorStop(0.4, `rgba(252,163,38,${0.18*glowAlpha})`);
+          gradient.addColorStop(1, `rgba(252,163,38,0)`);
+          ctx.beginPath();
+          ctx.arc(px, cy, glowRadius, 0, 2 * Math.PI);
+          ctx.fillStyle = gradient;
+          ctx.globalAlpha = 1;
+          ctx.fill();
+          ctx.restore();
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(px, cy, circleR, 0, 2*Math.PI);
+          ctx.fillStyle = "#fff";
+          ctx.shadowColor = "#fca326";
+          ctx.shadowBlur = 20;
+          ctx.strokeStyle = "#fca326";
+          ctx.lineWidth = dotBorder;
+          ctx.fill();
+          ctx.stroke();
+          ctx.restore();
+        } else {
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(px, cy, circleR, 0, 2 * Math.PI);
+          ctx.fillStyle = "#232323";
+          ctx.shadowColor = "#242424";
+          ctx.shadowBlur = 3;
+          ctx.strokeStyle = "#473c1c";
+          ctx.lineWidth = dotBorder;
+          ctx.fill();
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        ctx.save();
+        ctx.font = dateFont;
+        ctx.fillStyle = "#fca326";
+        ctx.textAlign = isLeft ? "right" : "left";
+        ctx.textBaseline = "middle";
+        const dateX = isLeft ? px-38 : px+38;
+        ctx.fillText(events[i].date, dateX, cy-17);
+        ctx.restore();
+
+        ctx.save();
+        ctx.font = descFont;
+        ctx.fillStyle = "#f8fafc";
+        ctx.textAlign = isLeft ? "right" : "left";
+        ctx.textBaseline = "middle";
+        const descX = isLeft ? px-38 : px+38;
+        const descW = Math.min(canvas.width/2 - marginX - 24, 480, width/2 - marginX - 30);
+        wrapText(ctx, events[i].label, descX, cy+13, descW, width < 700 ? 17 : 21, isLeft ? "right":"left");
+        ctx.restore();
+      }
+    }
+
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight, align) {
+      const words = text.split(' ');
+      let line = '';
+      let lines = [];
+      for(let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + ' ';
+        const metrics = ctx.measureText(testLine);
+        const testWidth = metrics.width;
+        if (testWidth > maxWidth && n > 0) {
+          lines.push(line);
+          line = words[n] + ' ';
+        } else {
+          line = testLine;
+        }
+      }
+      lines.push(line);
+      for(let i=0; i<lines.length; i++) {
+        ctx.fillText(lines[i], x, y + i*lineHeight);
+      }
+    }
+
+    function getGlowAlphas(idx, glowPhase) {
+      return events.map((ev, i) =>
+        i < idx ? 1 :
+        i === idx ? 0.4 + 0.6*Math.abs(Math.sin(glowPhase * Math.PI)) :
+        0
+      );
+    }
+
+    function animatePrąd(timestamp) {
+      if (!lastTimestamp) lastTimestamp = timestamp;
+      const delta = (timestamp - lastTimestamp) / 1000;
+      lastTimestamp = timestamp;
+      glowPhase += delta*1.1;
+
+      const mainDuration = 0.7;
+      const branchDuration = 0.55;
+      const afterEventWait = 0.50;
+
+      if (waitAfterEvent > 0) {
+        waitAfterEvent -= delta;
+        if (waitAfterEvent <= 0) {
+          currentEventIdx++;
+          if (currentEventIdx >= events.length) currentEventIdx = 0;
+          mainPhase = currentEventIdx/(events.length-1);
+          runningToBranch = false;
+          branchPhase = 0;
+          waitAfterEvent = 0;
+        }
+      } else if (!runningToBranch) {
+        let targetPhase = currentEventIdx/(events.length-1);
+        mainPhase += delta / mainDuration * (1/(events.length-1));
+        if (mainPhase >= targetPhase) {
+          mainPhase = targetPhase;
+          runningToBranch = true;
+        }
+      } else if (branchPhase < 1) {
+        branchPhase += delta / branchDuration;
+        if (branchPhase >= 1) {
+          branchPhase = 1;
+          waitAfterEvent = afterEventWait;
+        }
+      }
+
+      let glowAlphas = getGlowAlphas(
+        branchPhase >= 1 ? currentEventIdx : currentEventIdx-1,
+        glowPhase
+      );
+
+      drawTimeline(glowAlphas, currentEventIdx, mainPhase, branchPhase, runningToBranch);
+      requestAnimationFrame(animatePrąd);
+    }
+
+    window.addEventListener('resize', () => {
+      drawTimeline(getGlowAlphas(currentEventIdx-1, glowPhase), currentEventIdx, mainPhase, branchPhase, runningToBranch);
+    });
+
+    requestAnimationFrame(animatePrąd);
+  </script>
+</body>
+</html>

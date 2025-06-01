@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Elektrownie Parowe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Roboto:wght@400;700&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', Arial, sans-serif;
+            background: #0c1a24;
+            color: #fff;
+        }
+        .topbar {
+            background: #09172b;
+            padding: 6px 0 0 12px;
+            position: relative;
+        }
+        .topbar .social {
+            position: absolute;
+            left: 20px;
+            top: 8px;
+        }
+        .topbar .social a {
+            color: #fff;
+            margin-right: 10px;
+            text-decoration: none;
+            font-size: 18px;
+            background: #16233a;
+            padding: 4px 8px;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+        .topbar .social a:hover {
+            background: #2764a9;
+        }
+        .topbar .right-links {
+            position: absolute;
+            right: 30px;
+            top: 8px;
+        }
+        .topbar .right-links a {
+            color: #fff;
+            margin-left: 16px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .topbar .right-links .cta {
+            background: #ff9000;
+            color: #fff;
+            border: none;
+            padding: 6px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+            margin-left: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .topbar .right-links .cta:hover {
+            background: #ffae42;
+        }
+
+        header {
+            background: #13243d;
+            padding: 0 0 0 0;
+            position: relative;
+        }
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 24px 40px 0 40px;
+        }
+        .logo {
+            font-family: 'Montserrat', Arial, sans-serif;
+            font-size: 2.1rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #fff;
+            margin-right: 40px;
+        }
+        nav {
+            flex: 1;
+        }
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        nav ul li {
+            margin-right: 22px;
+            position: relative;
+        }
+        nav ul li:last-child {
+            margin-right: 0;
+        }
+        nav ul li a {
+            color: #fff;
+            font-weight: 500;
+            text-decoration: none;
+            font-size: 1.08rem;
+            padding: 8px 2px;
+            transition: color 0.2s;
+            border-bottom: 2px solid transparent;
+        }
+        nav ul li a:hover {
+            color: #ff9000;
+            border-bottom: 2px solid #ff9000;
+        }
+
+        .hero {
+            width: 100%;
+            min-height: 410px;
+            background: url('elektrownia3.png') center/cover no-repeat;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg,rgba(12,23,44,0.30) 80%, #0a1b29 100%);
+        }
+        .hero-content {
+            position: absolute;
+            left: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            text-align: left;
+            z-index: 2;
+            width: 80%;
+            padding-bottom: 0;
+            margin-top: 330px;
+        }
+        .hero-title {
+            font-family: 'Montserrat', Arial, sans-serif;
+            font-size: 3.2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: 2px;
+            margin-top: 20px;
+        }
+        .hero-desc {
+            font-size: 1.1rem;
+            color: #b6c1d1;
+            max-width: 1100px;
+            margin-left: 0;
+            line-height: 1.6;
+            margin-top: 0px;
+        }
+        .site-footer-fixed {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            background: #13243d;
+            color: #b6c1d1;
+            padding: 6px 0 3px 0;
+            text-align: center;
+            font-size: 0.78em;
+            z-index: 9998;
+            box-shadow: 0 -2px 12px #0009;
+            border-top: 2px solid #13243d;
+            white-space: nowrap;
+            overflow-x: auto;
+        }
+        .site-footer-fixed b {
+            font-size: 0.92em;
+        }
+        @media (max-width: 600px) {
+            .site-footer-fixed {
+                font-size: 0.7em;
+                padding: 4px 0 1px 0;
+            }
+        }
+        .corner-info-box {
+            margin-bottom: 44px;
+        }
+        .corner-info-box {
+            position: fixed;
+            bottom: 1px;
+            right: 20px;
+            background: rgba(18,34,55,0.98);
+            color: #fff;
+            border-radius: 13px;
+            box-shadow: 0 4px 16px #0007;
+            padding: 18px 26px 15px 24px;
+            min-width: 210px;
+            z-index: 9999;
+            font-size: 1.06em;
+            font-family: 'Roboto', Arial, sans-serif;
+            line-height: 1.5;
+            border: 2.5px solid #ffffff;
+            user-select: none;
+        }
+        .corner-info-box .info-label {
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 0.93em;
+            margin-right: 6px;
+        }
+        .corner-info-box .info-value {
+            font-family: 'Roboto Mono', monospace;
+            letter-spacing: 0.7px;
+        }
+        @media (max-width: 600px) {
+            .corner-info-box {
+                min-width: 135px;
+                padding: 9px 8px 8px 10px;
+                font-size: 0.92em;
+                right: 5vw;
+                bottom: 12px;
+            }
+        }
+        @media (max-width: 800px) {
+            .header-content { flex-direction: column; align-items: flex-start; padding: 16px 10px 0 10px;}
+            .logo { font-size: 1.5rem; margin-bottom: 10px;}
+            nav ul { flex-direction: column; }
+            nav ul li { margin-bottom: 8px; }
+            .hero-title { font-size: 2rem; }
+            .hero-desc { font-size: 1rem; }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">Strona główna</div>
+            <nav>
+                <ul>
+                   <li><a href="Prezentacja.html">Prezentacja</a></li>
+                   <li><a href="Historia.html">Historia</a></li>
+                   <li><a href="Galeria.html">Galeria</a></li>
+                   <li><a href="Mapa.html">Mapa</a></li>
+                   <li><a href="Porównanie elektrowni.html">Porównanie elektrowni</a></li>
+                   <li><a href="Schemat.html">Schemat</a></li>
+                   <li><a href="Obiegi.html">Obiegi </a></li>
+                   <li><a href="Sprawność.html">Sprawność</a></li>
+                   <li><a href="Kalkulator.html">Kalkulator</a></li>
+                   <li><a href="Formularz kontaktowy.html">Formularz kontaktowy</a></li>
+                     
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <div class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-title">Elektrownie parowe</div>
+            <div class="hero-desc">
+                Elektrownie parowe to zakłady energetyczne, w których energia cieplna wytwarzana przez spalanie paliw (najczęściej węgla kamiennego lub brunatnego) jest przekształcana w energię elektryczną. Proces ten zachodzi dzięki użyciu pary wodnej, która napędza turbiny połączone z generatorami.
+            </div>
+        </div>
+    </div>
+    <div class="corner-info-box" id="cornerInfoBox">
+        <div><span class="info-label"><i class="fa-regular fa-clock"></i> Zegar:</span> <span class="info-value" id="cornerClock"></span></div>
+        <div><span class="info-label"><i class="fa-regular fa-calendar"></i> Data:</span> <span class="info-value" id="cornerDate"></span></div>
+        <div><span class="info-label"><i class="fa-solid fa-eye"></i> Odwiedzin:</span> <span class="info-value" id="cornerVisits"></span></div>
+        <div><span class="info-label"><i class="fa-solid fa-hourglass-half"></i> Na stronie:</span> <span class="info-value" id="cornerTime"></span></div>
+    </div>
+    <footer class="site-footer-fixed">
+        Autor: <b>Justyna Furmańska </b> &mdash; Projekt strony internetowej wykonany w ramach zaliczenia przedmiotu MO: TIiSKwE na kierunku Energetyka.
+    </footer>
+    <script>
+
+    function updateClockAndDate() {
+        const now = new Date();
+        const pad = n => n < 10 ? '0' + n : n;
+        document.getElementById('cornerClock').textContent =
+            pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+        document.getElementById('cornerDate').textContent =
+            pad(now.getDate()) + '.' + pad(now.getMonth() + 1) + '.' + now.getFullYear();
+    }
+    setInterval(updateClockAndDate, 1000);
+    updateClockAndDate();
+
+    (function(){
+      const visitKey = 'plower_site_visited';
+      const countKey = 'plower_visit_count';
+      if (!sessionStorage.getItem(visitKey)) {
+        let count = parseInt(localStorage.getItem(countKey) || '0', 10);
+        count++;
+        localStorage.setItem(countKey, count);
+        sessionStorage.setItem(visitKey, 'true');
+      }
+      document.getElementById('cornerVisits').textContent = localStorage.getItem(countKey) || '1';
+    })();
+
+
+    (function(){
+        const timeKey = 'plower_session_time';
+        const startKey = 'plower_session_start';
+        let start = parseInt(sessionStorage.getItem(startKey));
+        if (!start) {
+            start = Date.now();
+            sessionStorage.setItem(startKey, start);
+            sessionStorage.setItem(timeKey, '0');
+        }
+        function updateTime() {
+            const startTime = parseInt(sessionStorage.getItem(startKey));
+            const now = Date.now();
+            const seconds = Math.floor((now - startTime) / 1000);
+            let h = Math.floor(seconds / 3600);
+            let m = Math.floor((seconds % 3600) / 60);
+            let s = seconds % 60;
+            document.getElementById('cornerTime').textContent =
+                (h > 0 ? h + 'h ' : '') + (m > 0 ? m + 'min ' : '') + s + 's';
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+    })();
+    </script>
+</body>
+</html>

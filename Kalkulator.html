@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Kalkulator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { background: #0c1a24; color: #fff; font-family: Arial, sans-serif; padding: 30px;}
+    .container { background: #16233a; padding: 30px; border-radius: 10px; max-width: 650px; margin: 0 auto;}
+    h2, h3 { text-align: center; }
+    label { display: block; margin-top: 14px; }
+    input, select {
+      width: 100%; padding: 8px; border-radius: 5px; border: none; margin-bottom: 8px;
+      background: #fff; color: #222; font-size: 1em;
+    }
+    input:focus, select:focus {
+      outline: 2px solid #ff9000;
+      background: #f9f7f4;
+    }
+    button {
+      background: #ff9000; color: #fff; padding: 10px 22px; border: none; border-radius: 6px;
+      font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 11px;
+    }
+    button:hover { background: #ffae42; }
+    .wynik {
+      margin-top: 24px;
+      margin-bottom: 8px;
+      text-align: center;
+      font-size: 1.16em;
+      font-weight: bold;
+      color: #ffa500;
+      background: #252e48;
+      border-radius: 10px;
+      padding: 16px 10px 14px 10px;
+      min-height: 1.7em;
+      display: block;
+    }
+    .canvas-container { position: relative; margin: 40px auto 0 auto; width: 460px; }
+    canvas { display: block; margin: 0 auto; background: #fff; border-radius: 8px; }
+    .canvas-title {
+      position: absolute;
+      left: 0; top: 12px;
+      width: 100%;
+      text-align: center;
+      color: #ff9000;
+      font-weight: bold;
+      font-size: 1.12em;
+      letter-spacing: 0.5px;
+      pointer-events: none;
+      text-shadow: 1px 1px 2px #0008;
+      z-index: 2;
+    }
+    .desc { color: #bbb; font-size: 0.96em; padding-bottom: 6px;}
+    .formula, .opisy-wzorow {
+      color: #ffa500; font-size: 1em; margin-top: 7px; background: #252e48; padding: 5px 10px; border-radius: 5px;
+      text-align: center;
+    }
+    .tabs { display: flex; justify-content: center; margin-bottom: 20px; }
+    .tab-button {
+      background: #223656; color: #ff9000; border: none; border-radius: 8px 8px 0 0;
+      margin: 0 2px; padding: 10px 22px; font-size: 1.03em; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .tab-button.active, .tab-button:hover { background: #ff9000; color: #fff; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .formula-hydro {
+      color: #ffa500; font-size: 1.12em; margin-top: 12px; background: #252e48; padding: 8px 12px; border-radius: 7px;
+      font-family: 'Times New Roman', serif;
+      display: inline-block;
+      text-align: center;
+    }
+    .math-fraction {
+      display: inline-block;
+      vertical-align: middle;
+      text-align: center;
+    }
+    .math-fraction .top { border-bottom: 1px solid #fff; display: block; padding: 0 2px 2px 2px; }
+    .math-fraction .bottom { display: block; padding: 2px 2px 0 2px; }
+    .math-nobr { white-space: nowrap; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Przeliczniki elektrowni parowej</h2>
+    <div class="tabs">
+      <button class="tab-button active" onclick="showTab(0)">Sprawność turbiny</button>
+      <button class="tab-button" onclick="showTab(1)">Współczynnik rezystancji cieplnej</button>
+      <button class="tab-button" onclick="showTab(2)">Bilans energii pary</button>
+      <button class="tab-button" onclick="showTab(3)">Ciepło skraplania pary</button>
+      <button class="tab-button" onclick="showTab(4)">Entalpia pary przegrzanej</button>
+    </div>
+
+    <div class="tab-content active" id="tab0">
+      <div class="desc">
+        Aby wyznaczyć sprawność turbiny należy podać moc wyjściową oraz moc wejściową turbiny<br>
+      </div>
+      <div class="formula">
+        Wzór: η = (P<sub>wyj</sub> / P<sub>wej</sub>) × 100%
+      </div>
+      <form id="przelicznik-form" autocomplete="off">
+        <label for="p_wej">Moc wejściowa P<sub>wej</sub> [kW]</label>
+        <input type="number" id="p_wej" name="p_wej" required min="0.01" step="any" inputmode="decimal" pattern="[0-9,.\-]+">
+        <label for="p_wyj">Moc wyjściowa P<sub>wyj</sub> [kW]</label>
+        <input type="number" id="p_wyj" name="p_wyj" required min="0.01" step="any" inputmode="decimal" pattern="[0-9,.\-]+">
+        <button type="submit">Oblicz sprawność</button>
+      </form>
+      <div class="wynik" id="wynik"></div>
+      <div class="canvas-container" style="margin-top:40px;">
+        <div class="canvas-title" style="top:12px;">Sprawność turbiny w funkcji mocy wyjściowej</div>
+        <canvas id="wykres" width="430" height="260" style="margin-top:40px;"></canvas>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab1">
+      <div class="desc">
+        Aby obliczyć temperaturowy współczynnik rezystancji dla przewodnika należy podać:rezystancję początkową, temperaturę początkową, temperaturę końcową oraz współczynnik temperaturowy.<br>
+      </div>
+      <div class="formula">
+        Wzór: R = R₀ × [1 + α × (T - T₀)]
+      </div>
+      <form id="rezystancja-form" autocomplete="off">
+        <label for="r0">Rezystancja początkowa R₀ [Ω]</label>
+        <input type="number" id="r0" name="r0" required step="any" inputmode="decimal" pattern="[0-9,.\-]+">
+        <label for="t0">Temperatura początkowa T₀ [°C]</label>
+        <input type="number" id="t0" name="t0" required step="any" inputmode="decimal" pattern="[0-9,.\-]+">
+        <label for="t">Temperatura końcowa T [°C]</label>
+        <input type="number" id="t" name="t" required step="any" inputmode="decimal" pattern="[0-9,.\-]+">
+        <label for="alfa">Współczynnik temperaturowy α [1/°C]</label>
+        <input type="number" id="alfa" name="alfa" required step="any" inputmode="decimal" pattern="[0-9,.\-]+">
+        <button type="submit">Oblicz rezystancję</button>
+      </form>
+      <div class="wynik" id="wynik-rezystancja"></div>
+    </div>
+
+    <div class="tab-content" id="tab2">
+      <div class="desc">
+        Aby obliczyć ilość energii dostarczanej przez strumień parynależy podać:strumień masowy, entalpię wejściową oraz entalpię wyjściową. <br>
+      </div>
+      <div class="formula">
+        Wzór: Q = ṁ × (h<sub>in</sub> - h<sub>out</sub>)
+      </div>
+      <form id="bilans-form" autocomplete="off">
+        <label for="m_dot">Strumień masowy ṁ [kg/s]</label>
+        <input type="number" id="m_dot" name="m_dot" required step="any" inputmode="decimal" pattern="[0-9,.\-]+">
+        <label for="h_in">Entalpia wejściowa h<sub>in</sub> [kJ/kg]</label>
+        <input type="number" id="h_in" name="h_in" required step="any" inputmode="decimal" pattern="[0-9,.\-]+">
+        <label for="h_out">Entalpia wyjściowa h<sub>out</sub> [kJ/kg]</label>
+        <input type="number" id="h_out" name="h_out" required step="any" inputmode="decimal" pattern="[0-9,.\-]+">
+        <button type="submit">Oblicz energię Q</button>
+      </form>
+      <div class="wynik" id="wynik-bilans"></div>
+    </div>
+
+    <div class="tab-content" id="tab3">
+      <div class="desc">
+        Aby obliczyć ilość ciepła oddanego podczas skraplania pary należy podać: masę pary oraz ciepło parowania wody.<br>
+      </div>
+      <div class="formula">
+        Wzór: Q = m × L<br>
+        <span style="font-size:0.96em;color:#ccc;">(L dla wody w 100°C ≈ 2260 kJ/kg)</span>
+      </div>
+      <form id="skraplanie-form" autocomplete="off">
+        <label for="masa">Masa pary m [kg]</label>
+        <input type="number" id="masa" name="masa" required step="any" inputmode="decimal" pattern="[0-9,.\-]+">
+        <label for="cieplo_parowania">Ciepło parowania L [kJ/kg]</label>
+        <input type="number" id="cieplo_parowania" name="cieplo_parowania" required step="any" inputmode="decimal" pattern="[0-9,.\-]+">
+        <button type="submit">Oblicz ciepło oddane</button>
+      </form>
+      <div class="wynik" id="wynik-skraplanie"></div>
+    </div>
+
+    <div class="tab-content" id="tab4">
+      <div class="desc">
+        Aby obliczyć entalpię pary przegrzanej w określonych warunkach hydraulicznych sieci parowych należy podać:średnice izolacji rurociągu, długość odcinka rurociągu, współczynnik przenikania ciepła przez izolację, temperature na powierzchni izolacji, temperature otoczenia, strumień masowy pary, entalpie początkowa pary<br>
+        <div class="formula-hydro" style="text-align: center; width: 100%;">
+          <span class="math-nobr"><b>h<sub>p</sub></b> = &pi; <b>d<sub>iz</sub></b> <b>l</b> <b>&alpha;<sub>w</sub></b></span>
+          <span class="math-fraction" style="margin:0 3px;">
+            <span class="top"><b>t<sub>iz</sub></b> - <b>t<sub>o</sub></b></span>
+            <span class="bottom"><b>G<sub>p</sub></b></span>
+          </span>
+          + <b>h<sub>n</sub></b>
+          <span class="math-nobr" style="margin-left:8px;">[kJ/kg]</span>
+        </div>
+      </div>
+      <form id="hydro-entalpia-form" autocomplete="off">
+        <label for="d_iz">Średnica izolacji <i>d<sub>iz</sub></i> [m]</label>
+        <input type="number" id="d_iz" name="d_iz" required step="any" min="0.001" inputmode="decimal" pattern="[0-9,.\-]+">
+        <label for="l">Długość odcinka rurociągu <i>l</i> [m]</label>
+        <input type="number" id="l" name="l" required step="any" min="0.1" inputmode="decimal" pattern="[0-9,.\-]+">
+        <label for="alfa_w">Współczynnik przenikania ciepła <i>&alpha;<sub>w</sub></i> [W/(m²·K)]</label>
+        <input type="number" id="alfa_w" name="alfa_w" required step="any" min="0.01" inputmode="decimal" pattern="[0-9,.\-]+">
+        <label for="t_iz">Temperatura powierzchni izolacji <i>t<sub>iz</sub></i> [°C]</label>
+        <input type="number" id="t_iz" name="t_iz" required step="any" inputmode="decimal" pattern="[0-9,.\-]+">
+        <label for="t_o">Temperatura otoczenia <i>t<sub>o</sub></i> [°C]</label>
+        <input type="number" id="t_o" name="t_o" required step="any" inputmode="decimal" pattern="[0-9,.\-]+">
+        <label for="G_p">Strumień masowy pary <i>G<sub>p</sub></i> [kg/s]</label>
+        <input type="number" id="G_p" name="G_p" required step="any" min="0.001" inputmode="decimal" pattern="[0-9,.\-]+">
+        <label for="h_n">Entalpia początkowa <i>h<sub>n</sub></i> [kJ/kg]</label>
+        <input type="number" id="h_n" name="h_n" required step="any" min="0" inputmode="decimal" pattern="[0-9,.\-]+">
+        <button type="submit">Oblicz entalpię</button>
+      </form>
+      <div class="wynik" id="wynik-entalpia-hydro"></div>
+    </div>
+  </div>
+  <script>
+    function showTab(idx) {
+      document.querySelectorAll('.tab-button').forEach((btn, i) => {
+        btn.classList.toggle('active', i === idx);
+      });
+      document.querySelectorAll('.tab-content').forEach((tc, i) => {
+        tc.classList.toggle('active', i === idx);
+      });
+    }
+
+    function rysujWykres(P_wej, P_wyj, etaWynik=null) {
+      const canvas = document.getElementById('wykres');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const margin = 65;
+      const plotW = canvas.width - 2*margin;
+      const plotH = canvas.height - 2*margin;
+      const PwyjMin = 0;
+      const PwyjMax = P_wej > 0 ? P_wej : 1000;
+      const etaMin = 0;
+      const etaMax = 100;
+
+      ctx.strokeStyle = "#31425c";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(margin, margin);
+      ctx.lineTo(margin, canvas.height - margin);
+      ctx.lineTo(canvas.width - margin, canvas.height - margin);
+      ctx.stroke();
+
+      ctx.font = "13px Arial";
+      ctx.textAlign = "right";
+      ctx.fillStyle = "#222";
+      for(let i=0; i<=5; i++) {
+        let y = margin + i * plotH/5;
+        let etaV = Math.round(etaMax - (etaMax-etaMin)*i/5);
+        ctx.fillText(etaV, margin-12, y+5);
+        ctx.strokeStyle="#e0e0e0";
+        ctx.beginPath();
+        ctx.moveTo(margin-3, y);
+        ctx.lineTo(margin+plotW, y);
+        ctx.stroke();
+      }
+      ctx.font = "13px Arial";
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#222";
+      for(let i=0; i<=5; i++) {
+        let x = margin + i*plotW/5;
+        let pV = Math.round(PwyjMin + (PwyjMax-PwyjMin)*i/5);
+        ctx.fillText(pV, x, canvas.height-margin+28);
+        ctx.strokeStyle="#e0e0e0";
+        ctx.beginPath();
+        ctx.moveTo(x, canvas.height-margin+3);
+        ctx.lineTo(x, margin);
+        ctx.stroke();
+      }
+      ctx.strokeStyle="#ff9000";
+      ctx.lineWidth=2.5;
+      ctx.beginPath();
+      for(let i=0; i<=100; i++) {
+        let Pwyj = PwyjMin + i*(PwyjMax-PwyjMin)/100;
+        let eta = (Pwyj / PwyjMax) * 100;
+        let x = margin + (Pwyj-PwyjMin)/(PwyjMax-PwyjMin)*plotW;
+        let y = margin + (etaMax-eta)/(etaMax-etaMin)*plotH;
+        if(i==0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.save();
+      ctx.fillStyle = "#222";
+      ctx.font = "bold 15px Arial";
+      ctx.textAlign = "center";
+      ctx.translate(margin-45, margin+plotH/2);
+      ctx.rotate(-Math.PI/2);
+      ctx.fillText("Sprawność η [%]", 0, 0);
+      ctx.restore();
+      ctx.font = "bold 15px Arial";
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#222";
+      ctx.fillText("Moc wyjściowa [kW]", margin + plotW/2, canvas.height - margin + 55);
+
+      if (P_wej > 0 && P_wyj >= 0 && P_wyj <= P_wej && etaWynik !== null) {
+        const eta = etaWynik;
+        let x0 = margin + (P_wyj-PwyjMin)/(PwyjMax-PwyjMin)*plotW;
+        let y0 = margin + (etaMax-eta)/(etaMax-etaMin)*plotH;
+        ctx.fillStyle="#36f";
+        ctx.beginPath();
+        ctx.arc(x0, y0, 6, 0, 2*Math.PI);
+        ctx.fill();
+        ctx.font = "bold 13px Arial";
+        ctx.textAlign = "left";
+        ctx.fillStyle = "#36f";
+        ctx.fillText(`η = ${eta.toFixed(2)}%`, x0+12, y0-5);
+      }
+    }
+
+    document.getElementById('przelicznik-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const P_wej = parseFloat(document.getElementById('p_wej').value);
+      const P_wyj = parseFloat(document.getElementById('p_wyj').value);
+
+      let wynikDiv = document.getElementById('wynik');
+      if(P_wej <= 0 || P_wyj < 0 || P_wyj > P_wej) {
+        wynikDiv.innerHTML = '<span style="color:#f00">Błędne dane wejściowe. P<sub>wyj</sub> musi być ≥ 0 i ≤ P<sub>wej</sub>.</span>';
+        rysujWykres(1000, null);
+        return;
+      }
+      const eta = (P_wyj / P_wej) * 100;
+      wynikDiv.innerHTML =
+        `<b>Sprawność turbiny η = ${eta.toFixed(2)}%</b>`;
+      rysujWykres(P_wej, P_wyj, eta);
+    });
+
+    document.getElementById('rezystancja-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const R0 = parseFloat(document.getElementById('r0').value);
+      const T0 = parseFloat(document.getElementById('t0').value);
+      const T = parseFloat(document.getElementById('t').value);
+      const alfa = parseFloat(document.getElementById('alfa').value);
+
+      let wynikDiv = document.getElementById('wynik-rezystancja');
+      if(isNaN(R0) || isNaN(T0) || isNaN(T) || isNaN(alfa)) {
+        wynikDiv.innerHTML = '<span style="color:#f00">Błędne dane.</span>';
+        return;
+      }
+      const R = R0 * (1 + alfa * (T - T0));
+      wynikDiv.innerHTML =
+        `<b>Rezystancja w ${T}°C: R = ${R.toFixed(4)} Ω</b>`;
+    });
+
+    document.getElementById('bilans-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const m_dot = parseFloat(document.getElementById('m_dot').value);
+      const h_in = parseFloat(document.getElementById('h_in').value);
+      const h_out = parseFloat(document.getElementById('h_out').value);
+
+      let wynikDiv = document.getElementById('wynik-bilans');
+      if(isNaN(m_dot) || isNaN(h_in) || isNaN(h_out)) {
+        wynikDiv.innerHTML = '<span style="color:#f00">Błędne dane.</span>';
+        return;
+      }
+      const Q = m_dot * (h_in - h_out);
+      wynikDiv.innerHTML =
+        `<b>Ilość energii Q = ${Q.toFixed(2)} kW</b>`;
+    });
+
+    document.getElementById('skraplanie-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const masa = parseFloat(document.getElementById('masa').value);
+      const L = parseFloat(document.getElementById('cieplo_parowania').value);
+
+      let wynikDiv = document.getElementById('wynik-skraplanie');
+      if(isNaN(masa) || isNaN(L)) {
+        wynikDiv.innerHTML = '<span style="color:#f00">Błędne dane.</span>';
+        return;
+      }
+      const Q = masa * L;
+      wynikDiv.innerHTML =
+        `<b>Ciepło oddane Q = ${Q.toFixed(2)} kJ</b>`;
+    });
+
+    document.getElementById('hydro-entalpia-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const pi = Math.PI;
+      const d_iz = parseFloat(document.getElementById('d_iz').value);
+      const l = parseFloat(document.getElementById('l').value);
+      const alfa_w = parseFloat(document.getElementById('alfa_w').value);
+      const t_iz = parseFloat(document.getElementById('t_iz').value);
+      const t_o = parseFloat(document.getElementById('t_o').value);
+      const G_p = parseFloat(document.getElementById('G_p').value);
+      const h_n = parseFloat(document.getElementById('h_n').value);
+
+      let wynikDiv = document.getElementById('wynik-entalpia-hydro');
+      let blad = '';
+      if (d_iz <= 0) blad += 'Średnica izolacji musi być dodatnia.<br>';
+      if (l <= 0) blad += 'Długość odcinka musi być dodatnia.<br>';
+      if (alfa_w <= 0) blad += 'Współczynnik αw musi być dodatni.<br>';
+      if (G_p <= 0) blad += 'Strumień masowy pary musi być dodatni.<br>';
+      if (blad) {
+        wynikDiv.innerHTML = '<span style="color:#f00">'+blad+'</span>';
+        return;
+      }
+      const cz1 = pi * d_iz * l * alfa_w * ((t_iz - t_o) / G_p);
+      const h_p = cz1 + h_n;
+      wynikDiv.innerHTML =
+        `<div class="formula-hydro">
+          <b>h<sub>p</sub> = ${h_p.toFixed(2)} kJ/kg</b>
+        </div>`;
+    });
+
+    rysujWykres(1000, null);
+  </script>
+</body>
+</html>

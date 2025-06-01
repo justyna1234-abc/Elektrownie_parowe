@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Porównanie elektrowni</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { background: #0c1a24; color: #fff; font-family: Arial, sans-serif; padding: 30px;}
+        h2 { text-align: center; }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background: #16233a;
+            margin: 0 auto;
+            font-size: 0.97em;
+        }
+        th, td {
+            border: 1px solid #31425c;
+            padding: 6px 10px;
+            text-align: center;
+        }
+        th {
+            background: #223656;
+            color: #ff9000;
+            font-weight: bold;
+        }
+        tr:nth-child(even) { background: #1c2940; }
+        caption {
+            margin-bottom: 16px;
+            font-size: 1.2em;
+            color: #ff9000;
+            font-weight: bold;
+        }
+        .comic-footer {
+           width: 100vw;
+           text-align: center;
+           color: #ffb547;
+           font-size: 0.7em;
+           margin-top: 14px;
+           margin-bottom: 10px;
+           letter-spacing: 0.2px;
+           padding-bottom: 18px;
+          }
+          .comic-footer a {
+            color: #ffb547;
+            text-decoration: underline; 
+          }
+    </style>
+</head>
+<body>
+    <h2>Porównanie wybranych elektrowni parowych w Polsce</h2>
+    <div id="tabela-elektrownie"></div>
+    <script>
+    const elektrownie = [
+      {
+        nazwa: "Bełchatów",
+        wojewodztwo: "łódzkie",
+        miasto: "Rogowiec",
+        rok: 1981,
+        moc: 5472,
+        paliwo: "węgiel brunatny",
+        bloki: 13,
+        sprawnosc: "41%",
+        produkcja: 27000,
+        pracownicy: 3500,
+        emisja: 38000,
+        modernizacje: "2015, 2019",
+        operator: "PGE GiEK",
+        status: "czynna",
+        technologie: "odsiarczanie, wychwyt CO₂",
+        uwagi: "Największa elektrownia w Europie"
+      },
+      {
+        nazwa: "Opole",
+        wojewodztwo: "opolskie",
+        miasto: "Brzezie",
+        rok: 1993,
+        moc: 3320,
+        paliwo: "węgiel kamienny",
+        bloki: 8,
+        sprawnosc: "43%",
+        produkcja: 11000,
+        pracownicy: 1200,
+        emisja: 8500,
+        modernizacje: "2019",
+        operator: "PGE GiEK",
+        status: "czynna",
+        technologie: "odsiarczanie",
+        uwagi: ""
+      },
+      {
+        nazwa: "Kozienice",
+        wojewodztwo: "mazowieckie",
+        miasto: "Świerże Górne",
+        rok: 1972,
+        moc: 4053,
+        paliwo: "węgiel kamienny",
+        bloki: 10,
+        sprawnosc: "42%",
+        produkcja: 11000,
+        pracownicy: 1500,
+        emisja: 9800,
+        modernizacje: "2017",
+        operator: "Enea Wytwarzanie",
+        status: "czynna",
+        technologie: "odsiarczanie",
+        uwagi: "Najwyższy komin w Polsce"
+      },
+      {
+        nazwa: "Turów",
+        wojewodztwo: "dolnośląskie",
+        miasto: "Bogatynia",
+        rok: 1962,
+        moc: 2050,
+        paliwo: "węgiel brunatny",
+        bloki: 7,
+        sprawnosc: "40%",
+        produkcja: 7000,
+        pracownicy: 1200,
+        emisja: 10500,
+        modernizacje: "2021",
+        operator: "PGE GiEK",
+        status: "czynna",
+        technologie: "odsiarczanie",
+        uwagi: ""
+      },
+      {
+        nazwa: "Jaworzno III",
+        wojewodztwo: "śląskie",
+        miasto: "Jaworzno",
+        rok: 1972,
+        moc: 1535,
+        paliwo: "węgiel kamienny",
+        bloki: 3,
+        sprawnosc: "45%",
+        produkcja: 5000,
+        pracownicy: 800,
+        emisja: 5500,
+        modernizacje: "2020",
+        operator: "TAURON Wytwarzanie",
+        status: "czynna",
+        technologie: "odsiarczanie, niskonox",
+        uwagi: ""
+      },
+      {
+        nazwa: "Pątnów",
+        wojewodztwo: "wielkopolskie",
+        miasto: "Konin",
+        rok: 1967,
+        moc: 1200,
+        paliwo: "węgiel brunatny",
+        bloki: 5,
+        sprawnosc: "38%",
+        produkcja: 3600,
+        pracownicy: 850,
+        emisja: 5600,
+        modernizacje: "2015",
+        operator: "ZE PAK",
+        status: "czynna",
+        technologie: "odsiarczanie",
+        uwagi: "Pątnów II: blok 474 MW"
+      },
+      {
+        nazwa: "Adamów",
+        wojewodztwo: "wielkopolskie",
+        miasto: "Turek",
+        rok: 1967,
+        moc: 600,
+        paliwo: "węgiel brunatny",
+        bloki: 5,
+        sprawnosc: "38%",
+        produkcja: 1700,
+        pracownicy: 600,
+        emisja: 3200,
+        modernizacje: "2010",
+        operator: "ZE PAK",
+        status: "zakończona",
+        technologie: "odsiarczanie",
+        uwagi: "Wyłączona w 2021"
+      },
+      {
+        nazwa: "Konin",
+        wojewodztwo: "wielkopolskie",
+        miasto: "Konin",
+        rok: 1958,
+        moc: 248,
+        paliwo: "węgiel brunatny, biomasa",
+        bloki: 5,
+        sprawnosc: "35%",
+        produkcja: 900,
+        pracownicy: 500,
+        emisja: 1400,
+        modernizacje: "2012, 2019",
+        operator: "ZE PAK",
+        status: "czynna",
+        technologie: "odsiarczanie, współspalanie biomasy",
+        uwagi: "Przebudowa na biomasę"
+      }
+    ];
+
+    function generujTabele() {
+      const tabela = document.createElement('table');
+      tabela.innerHTML = `
+        <thead>
+          <tr>
+            <th rowspan="2">Nazwa</th>
+            <th colspan="2">Lokalizacja</th>
+            <th rowspan="2">Rok uruchomienia</th>
+            <th colspan="4">Dane techniczne</th>
+            <th rowspan="2">Pracownicy</th>
+            <th rowspan="2">Emisja CO₂ <br>(tys. ton/rok)</th>
+            <th rowspan="2">Modernizacje</th>
+            <th rowspan="2">Operator</th>
+            <th rowspan="2">Status</th>
+            <th rowspan="2">Technologie</th>
+            <th rowspan="2">Uwagi</th>
+          </tr>
+          <tr>
+            <th>Województwo</th>
+            <th>Miasto</th>
+            <th>Moc (MW)</th>
+            <th>Paliwo</th>
+            <th>Bloki</th>
+            <th>Sprawność</th>
+          </tr>
+        </thead>
+        <tbody>
+        ${
+          elektrownie.map(e =>
+            `<tr>
+              <td>${e.nazwa}</td>
+              <td>${e.wojewodztwo}</td>
+              <td>${e.miasto}</td>
+              <td>${e.rok}</td>
+              <td>${e.moc}</td>
+              <td>${e.paliwo}</td>
+              <td>${e.bloki}</td>
+              <td>${e.sprawnosc}</td>
+              <td>${e.pracownicy}</td>
+              <td>${e.emisja}</td>
+              <td>${e.modernizacje}</td>
+              <td>${e.operator}</td>
+              <td>${e.status}</td>
+              <td>${e.technologie}</td>
+              <td>${e.uwagi}</td>
+            </tr>`
+          ).join('')
+        }
+        </tbody>
+      `;
+      return tabela;
+    }
+
+    document.getElementById('tabela-elektrownie').appendChild(generujTabele());
+    </script>
+    <div class="comic-footer">
+    Źródło: <a href="https://pl.wikipedia.org/wiki/Lista_elektrowni_w_Polsce" target="_blank" rel="noopener">https://pl.wikipedia.org/wiki/Lista_elektrowni_w_Polsce</a>
+  </div>
+</body>
+</html>

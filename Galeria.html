@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Galeria</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: #0c1a24;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      box-sizing: border-box;
+      width: 100vw;
+      max-width: 100vw;
+      overflow: hidden !important;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+    }
+    body {
+      min-height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      box-sizing: border-box;
+      overflow: hidden !important;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+    }
+    .gallery-container {
+      width: 100vw;
+      height: calc(100vh - 50px);
+      margin: 0;
+      background: transparent;
+      border-radius: 0;
+      padding: 0;
+      box-shadow: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    .gallery-title {
+      text-align: center;
+      font-size: 3vw;
+      color: #fff;
+      font-weight: bold;
+      margin-top: 25px;
+      margin-bottom: 2vh;
+      letter-spacing: 1.2px;
+      text-shadow: 2px 2px 8px #000c;
+      width: 96vw;
+      max-width: 100vw;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    .gallery-image {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 70vw;
+      height: 40vw;
+      max-width: 900px;
+      max-height: 60vh;
+      min-height: 120px;
+      min-width: 180px;
+      margin-bottom: 1.1vh;
+      background: #fff0;
+      border-radius: 0;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+    .gallery-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 0;
+      background: none;
+      border: none;
+      box-shadow: none;
+      display: block;
+      margin: 0;
+      padding: 0;
+      max-width: 100%;
+      max-height: 100%;
+    }
+    .gallery-controls {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 0px;
+      flex-wrap: wrap;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    .gallery-controls button {
+      background: #ff9000;
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      padding: 7px 15px;
+      font-size: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-bottom: 6px;
+      box-shadow: 0 2px 8px #0004;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .gallery-controls button:hover {
+      background: #ffb84d;
+      color: #232834;
+    }
+    .gallery-index {
+      text-align: center;
+      color: #aaa;
+      font-size: 1em;
+      margin-top: 2px;
+      letter-spacing: 0.3px;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    .gallery-footer {
+      width: 100vw;
+      text-align: center;
+      color: #ffb547;
+      font-size: 0.7em;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      letter-spacing: 0.2px;
+      padding-bottom: 18px;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    .gallery-footer a {
+      color: #fca326;
+      text-decoration: underline;
+    }
+    @media (max-width: 900px) {
+      .gallery-title { font-size: 6vw; }
+      .gallery-image { width: 96vw; height: 32vw; max-width: 100vw; max-height: 35vh;}
+      .gallery-post { font-size: 1.6vw;}
+    }
+    @media (max-width: 600px) {
+      .gallery-title { font-size: 1.2em; }
+      .gallery-image { width: 98vw; height: 38vw; min-width: 90vw; min-height: 60px; }
+      .gallery-image img { max-height: 100px; }
+      .gallery-controls button { font-size: 0.85em; padding: 4px 7px; }
+      .gallery-post { font-size: 2vw;}
+    }
+  </style>
+</head>
+<body>
+  <div class="gallery-container">
+    <div class="gallery-title" id="galeriaTitle"></div>
+    <div class="gallery-image">
+      <img id="galeriaImg" src="" alt="Obraz">
+    </div>
+    <div class="gallery-post" id="galeriaPost"></div>
+    <div class="gallery-controls">
+      <button onclick="goTo(0)">⏮️ Pierwszy</button>
+      <button onclick="prevImg()">◀️ Poprzedni</button>
+      <button onclick="nextImg()">Następny ▶️</button>
+      <button onclick="goTo(galeriaImages.length-1)">Ostatni ⏭️</button>
+    </div>
+    <div class="gallery-index" id="galeriaIndex"></div>
+  </div>
+  <div class="gallery-footer">
+    Źródło: 
+    <a href="https://pl.wikipedia.org/wiki/Lista_elektrowni_w_Polsce" target="_blank" rel="noopener">
+      https://pl.wikipedia.org/wiki/Lista_elektrowni_w_Polsce
+    </a>
+  </div>
+  <script>
+    const galeriaImages = [
+      {
+        title: "1. Elektrownia Bełchatów",
+        src: "Bełchatów_Elektrownia.jpg"
+      },
+      {
+        title: "2. Elektrownia Opole",
+        src: "Elektrownia_Opole.jpg"
+      },
+      {
+        title: "3. Elektrownia Kozienice",
+        src: "Elektrownia__Kozienice.jpg"
+      },
+      {
+        title: "4. Elektrownia Turów",
+        src: "Elektrownia_Turów.jpg"
+      },
+      {
+        title: "5. Elektrownia Jaworzno III",
+        src: "Elektrownia_Jaworzno.jpg"
+      },
+      {
+        title: "6. Elektrownia Pątnów",
+        src: "Elektrownia_Pątnów.jpg"
+      },
+      {
+        title: "7. Elektrownia Adamów (wyłączona)",
+        src: "Elektrownia_Adamów.jpg"
+      },
+      {
+        title: "8. Elektrownia Konin",
+        src: "Elektrownia_Konin.jpg"
+      }
+    ];
+    let current = 0;
+    function showImg(idx) {
+      if (idx < 0) idx = 0;
+      if (idx >= galeriaImages.length) idx = galeriaImages.length-1;
+      current = idx;
+      document.getElementById("galeriaImg").src = galeriaImages[idx].src;
+      document.getElementById("galeriaImg").alt = galeriaImages[idx].title;
+      document.getElementById("galeriaTitle").textContent = galeriaImages[idx].title || "";
+      document.getElementById("galeriaPost").textContent = galeriaImages[idx].post || "";
+      document.getElementById("galeriaIndex").textContent = `Obraz ${idx+1} z ${galeriaImages.length}`;
+    }
+    function nextImg() { showImg((current+1)%galeriaImages.length); }
+    function prevImg() { showImg((current-1+galeriaImages.length)%galeriaImages.length); }
+    function goTo(idx) { showImg(idx); }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === "ArrowLeft") prevImg();
+      if (e.key === "ArrowRight") nextImg();
+      if (e.key === "Home") goTo(0);
+      if (e.key === "End") goTo(galeriaImages.length-1);
+    });
+    showImg(0);
+  </script>
+</body>
+</html>

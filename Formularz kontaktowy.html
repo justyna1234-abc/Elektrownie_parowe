@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Formularz kontaktowy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { background: #0c1a24; color: #fff; font-family: Arial, sans-serif; padding: 30px;}
+        form { background: #16233a; padding: 30px; border-radius: 10px; max-width: 450px; margin: 0 auto;}
+        label { display: block; margin-top: 16px; margin-bottom: 5px;}
+        input, select, textarea { width: 100%; padding: 8px; border-radius: 5px; border: none; margin-bottom: 8px;}
+        textarea { resize: vertical; }
+        .checkbox-group, .radio-group { display: flex; gap: 18px; margin-bottom: 12px;}
+        .file-input { background: #fff; color: #222; }
+        button { background: #ff9000; color: #fff; padding: 10px 22px; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer;}
+        button:hover { background: #ffae42; }
+        .info { font-size: 0.98em; color: #b6c1d1; margin-bottom: 14px;}
+        .sent-message {
+            background: #153f1a;
+            color: #fff;
+            padding: 16px 10px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            margin-top: 10px;
+            display: none;
+            text-align: center;
+            font-size: 1.12em;
+            font-weight: bold;
+            border: 1px solid #2ea34f;
+        }
+        .checkbox-error {
+            color: #ffae42;
+            font-size: 0.98em;
+            margin: 0 0 8px 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <form id="kontakt-formularz" autocomplete="off">
+        <h2>Formularz kontaktowy</h2>
+        <div class="info">Pola oznaczone * są wymagane.</div>
+
+        <label for="imie">Imię i nazwisko *</label>
+        <input type="text" id="imie" name="imie" required>
+
+        <label for="email">Adres e-mail *</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="data">Data dzisiejsza *</label>
+        <input type="date" id="data" name="data" required>
+
+        <label>Płeć</label>
+        <div class="radio-group">
+            <label><input type="radio" name="plec" value="Kobieta"> Kobieta</label>
+            <label><input type="radio" name="plec" value="Mężczyzna"> Mężczyzna</label>
+        </div>
+
+        <label for="elektrownia">Wybierz elektrownię, z którą chcesz się skontaktować *</label>
+        <select id="elektrownia" name="elektrownia" required>
+            <option value="">Wybierz...</option>
+            <option value="Elektrownia Bełchatów">Elektrownia Bełchatów</option>
+            <option value="Elektrownia Turów">Elektrownia Turów</option>
+            <option value="Elektrownia Kozienice">Elektrownia Kozienice</option>
+            <option value="Elektrownia Opole">Elektrownia Opole</option>
+            <option value="Elektrownia Jaworzno">Elektrownia Jaworzno</option>
+            <option value="Elektrownia Połaniec">Elektrownia Połaniec</option>
+            <option value="Elektrownia Dolna Odra">Elektrownia Dolna Odra</option>
+            <option value="Elektrownia Ostrołęka">Elektrownia Ostrołęka</option>
+            <option value="Elektrownia Adamów">Elektrownia Adamów</option>
+            <option value="Elektrownia Pątnów">Elektrownia Pątnów</option>
+        </select>
+
+        <label>Wybierz dział z którym chcesz się skontaktować *</label>
+        <div class="checkbox-group" id="dzial-checkbox-group">
+            <label><input type="checkbox" name="dzial[]" value="Biuro Obsługi Klienta"> Biuro Obsługi Klienta</label>
+            <label><input type="checkbox" name="dzial[]" value="Księgowość"> Księgowość</label>
+            <label><input type="checkbox" name="dzial[]" value="Marketing"> Marketing</label>
+            <label><input type="checkbox" name="dzial[]" value="Sekretariat Zarządu"> Sekretariat Zarządu</label>
+        </div>
+        <div id="checkbox-error" class="checkbox-error">Proszę zaznaczyć przynajmniej jeden dział.</div>
+
+        <label for="wojewodztwo">Województwo zamieszkania *</label>
+        <select id="wojewodztwo" name="wojewodztwo" required>
+            <option value="">Wybierz...</option>
+            <option value="dolnośląskie">dolnośląskie</option>
+            <option value="kujawsko-pomorskie">kujawsko-pomorskie</option>
+            <option value="lubelskie">lubelskie</option>
+            <option value="lubuskie">lubuskie</option>
+            <option value="łódzkie">łódzkie</option>
+            <option value="małopolskie">małopolskie</option>
+            <option value="mazowieckie">mazowieckie</option>
+            <option value="opolskie">opolskie</option>
+            <option value="podkarpackie">podkarpackie</option>
+            <option value="podlaskie">podlaskie</option>
+            <option value="pomorskie">pomorskie</option>
+            <option value="śląskie">śląskie</option>
+            <option value="świętokrzyskie">świętokrzyskie</option>
+            <option value="warmińsko-mazurskie">warmińsko-mazurskie</option>
+            <option value="wielkopolskie">wielkopolskie</option>
+            <option value="zachodniopomorskie">zachodniopomorskie</option>
+        </select>
+
+        <label for="opis">Wiadomość *</label>
+        <textarea id="opis" name="opis" rows="3" placeholder="Twoja wiadomość" required></textarea>
+
+        <label for="plik">Załącz plik (np. zdjęcie)</label>
+        <input type="file" id="plik" name="plik" class="file-input">
+
+        <button type="submit">Wyślij</button>
+        <div id="sent-message" class="sent-message">
+            Twoja wiadomość została wysłana!
+        </div>
+    </form>
+    <script>
+        document.getElementById('kontakt-formularz').addEventListener('submit', function(e) {
+            var checkboxes = document.querySelectorAll('input[name="dzial[]"]');
+            var checked = false;
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].checked) {
+                    checked = true;
+                    break;
+                }
+            }
+            var checkboxError = document.getElementById('checkbox-error');
+            if (!checked) {
+                checkboxError.style.display = 'block';
+                e.preventDefault();
+                return false;
+            } else {
+                checkboxError.style.display = 'none';
+            }
+            e.preventDefault();
+            var sentMsg = document.getElementById('sent-message');
+            sentMsg.style.display = 'block';
+            sentMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            document.getElementById('kontakt-formularz').reset();
+            setTimeout(function() {
+                sentMsg.style.display = 'none';
+            }, 4000);
+        });
+
+        document.querySelectorAll('input[name="dzial[]"]').forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                var checkboxError = document.getElementById('checkbox-error');
+                var anyChecked = Array.from(document.querySelectorAll('input[name="dzial[]"]')).some(cb => cb.checked);
+                if (anyChecked) {
+                    checkboxError.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

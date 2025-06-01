@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Mapa</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background: #0c1a24;
+            color: #fff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            box-sizing: border-box;
+            width: 100vw;
+            max-width: 100vw;
+        }
+        body {
+            min-height: 100vh;
+            width: 100vw;
+            max-width: 100vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            box-sizing: border-box;
+        }
+        h1 {
+            text-align: center;
+            margin: 30px 0 10px 0;
+            color: #fff;
+            font-size: 2.2rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .map-description {
+            text-align: center;
+            color: #ff9900;
+            font-size: 1.13em;
+            font-weight: 500;
+            margin-bottom: 5px;
+            margin-top: 10px;
+        }
+        .map-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        .img-wrap {
+            position: relative;
+            display: inline-block;
+            border-radius: 10px;
+            box-shadow: none;
+            margin-top: -40px;
+            margin-left: -50px;
+        }
+        #elektrownieimg {
+            display:block;
+            border-radius:10px;
+            box-shadow: none;
+            border: none;
+            max-width: 100vw;
+            height: auto;
+        }
+        .marker {
+            pointer-events: none;
+            position: absolute;
+            z-index: 2;
+            border-radius: 50%;
+            box-shadow: 0 0 14px 5px #ff9000bb;
+            border: 2px solid #ff9900;
+            width: 20px; height: 20px;
+            background: #fff6c2;
+        }
+        .label {
+            pointer-events: none;
+            position: absolute;
+            z-index: 3;
+            font-size: 0.8em;
+            font-weight: bold;
+            color: #174684;
+            background: #fff6c2;
+            padding: 1px 4px;
+            border-radius: 8px;
+            border: 1px solid #ff9000;
+            left: 0;
+            top: -25px;
+            white-space: nowrap;
+            text-shadow: 1px 1px 3px #fff;
+        }
+        #infoBox {
+            display: none;
+            position: fixed;
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+            background: #18233a;
+            color: #fff;
+            border: 2px solid #ff9900;
+            border-radius: 16px;
+            padding: 32px 32px 24px 32px;
+            box-shadow: 0 8px 32px #000c;
+            z-index: 9999;
+            min-width: 260px;
+            max-width: 94vw;
+        }
+        #infoBox button {
+            margin-top: 18px;
+            background: #ff9900;
+            border: none;
+            color: #fff;
+            font-weight: bold;
+            padding: 10px 32px;
+            border-radius: 8px;
+            font-size: 1.12em;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        #infoBox button:hover { background: #ffae42; }
+        #infoText h2 {
+            font-size: 1.18em;
+            color: #ff9900;
+            margin-bottom: 10px;
+            margin-top: 0;
+            text-align: center;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+        #infoText {
+            font-size: 1.06em;
+            line-height: 1.5;
+            text-align: center;
+        }
+        .comic-footer {
+      width: 100vw;
+      text-align: center;
+      color: #ffb547;
+      font-size: 0.7em;
+      margin-top: -40px;
+      margin-bottom: 0px;
+      letter-spacing: 0.2px;
+      padding-bottom: 18px;
+    }
+    .comic-footer a {
+      color: #fca326;
+      text-decoration: underline;
+    }
+        @media (max-width: 900px) {
+            .img-wrap {
+                max-width: 98vw;
+            }
+            #elektrownieimg {
+                max-width: 98vw;
+                height: auto;
+            }
+        }
+        @media (max-width: 600px) {
+            #infoBox {
+                padding: 14px 2vw 14px 2vw;
+                min-width: unset;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>10 największych elektrowni w Polsce – mapa interaktywna</h1>
+    <div class="map-description">
+        Kliknij w znacznik na mapie, aby zobaczyć informacje o wybranej elektrowni.
+    </div>
+    <div class="map-container">
+        <div class="img-wrap">
+            <img src="Mapa_Biała.png" width="690" height="680" usemap="#elektrownie" alt="Mapa Polski – elektrownie" id="elektrownieimg">
+            <div class="marker" style="left:87px; top:208px;"><span class="label" style="left:22px;">Dolna Odra</span></div>
+            <div class="marker" style="left:120px; top:395px;"><span class="label" style="left:22px;">Turów</span></div>
+            <div class="marker" style="left:275px; top:425px;"><span class="label" style="left:22px;">Opole</span></div>
+            <div class="marker" style="left:310px; top:470px;"><span class="label" style="left:-35px;top:26px">Rybnik</span></div>
+            <div class="marker" style="left:350px; top:356px;"><span class="label" style="left:22px;">Bełchatów</span></div>
+            <div class="marker" style="left:336px; top:468px;"><span class="label" style="left:16px; top:23px">Łaziska</span></div>
+            <div class="marker" style="left:295px; top:272px;"><span class="label" style="left:22px;">Pątnów</span></div>
+            <div class="marker" style="left:476px; top:332px;"><span class="label" style="left:15px;">Kozienice</span></div>
+            <div class="marker" style="left:465px; top:442px;"><span class="label" style="left:22px;">Połaniec</span></div>
+            <div class="marker" style="left:358px; top:458px;"><span class="label" style="left:-4px;top:-30px">Jaworzno III</span></div>
+        </div>
+        <map name="elektrownie">
+            <area shape="circle" coords="97,218,14" href="#" alt="Dolna Odra" onclick="showInfo('dolnaodra'); return false;">
+            <area shape="circle" coords="130,405,14" href="#" alt="Turów" onclick="showInfo('turow'); return false;">
+            <area shape="circle" coords="285,435,14" href="#" alt="Opole" onclick="showInfo('opole'); return false;">
+            <area shape="circle" coords="320,480,14" href="#" alt="Rybnik" onclick="showInfo('rybnik'); return false;">
+            <area shape="circle" coords="360,366,12" href="#" alt="Bełchatów" onclick="showInfo('belchatow'); return false;">
+            <area shape="circle" coords="346,478,12" href="#" alt="Łaziska" onclick="showInfo('laziska'); return false;">
+            <area shape="circle" coords="305,282,12" href="#" alt="Pątnów" onclick="showInfo('patnow'); return false;">
+            <area shape="circle" coords="486,342,12" href="#" alt="Kozienice" onclick="showInfo('kozienice'); return false;">
+            <area shape="circle" coords="475,452,12" href="#" alt="Połaniec" onclick="showInfo('polaniec'); return false;">
+            <area shape="circle" coords="368,468,12" href="#" alt="Jaworzno III" onclick="showInfo('jaworzno'); return false;">
+        </map>
+    </div>
+    <div id="infoBox">
+        <div id="infoText"></div>
+        <button onclick="closeInfo()">Zamknij</button>
+    </div>
+    <script>
+        const info = {
+            dolnaodra: {
+                title: "Dolna Odra",
+                desc: "Moc: 1362 MW<br>Lokalizacja: Nowe Czarnowo, zachodniopomorskie"
+            },
+            turow: {
+                title: "Turów",
+                desc: "Moc: 2106 MW<br>Lokalizacja: Bogatynia, dolnośląskie"
+            },
+            opole: {
+                title: "Opole",
+                desc: "Moc: 1492 MW<br>Lokalizacja: Opole, opolskie"
+            },
+            rybnik: {
+                title: "Rybnik",
+                desc: "Moc: 1775 MW<br>Lokalizacja: Rybnik, śląskie"
+            },
+            belchatow: {
+                title: "Bełchatów",
+                desc: "Moc: 5354 MW<br>Lokalizacja: Bełchatów, łódzkie"
+            },
+            laziska: {
+                title: "Łaziska",
+                desc: "Moc: 1155 MW<br>Lokalizacja: Łaziska Górne, śląskie"
+            },
+            patnow: {
+                title: "Pątnów",
+                desc: "Moc: 1200 MW (grupa ZE PAK: 2512 MW)<br>Lokalizacja: Konin, wielkopolskie"
+            },
+            kozienice: {
+                title: "Kozienice",
+                desc: "Moc: 2193 MW<br>Lokalizacja: Świerże Górne, mazowieckie"
+            },
+            polaniec: {
+                title: "Połaniec",
+                desc: "Moc: 1800 MW<br>Lokalizacja: Połaniec, świętokrzyskie"
+            },
+            jaworzno: {
+                title: "Jaworzno III",
+                desc: "Moc: 1535 MW<br>Lokalizacja: Jaworzno, śląskie"
+            }
+        };
+        function showInfo(key) {
+            document.getElementById('infoText').innerHTML =
+                `<h2>${info[key].title}</h2>${info[key].desc}`;
+            document.getElementById('infoBox').style.display = "block";
+        }
+        function closeInfo() {
+            document.getElementById('infoBox').style.display = "none";
+        }
+        window.addEventListener('keydown', function(e) {
+            if(e.key === "Escape") closeInfo();
+        });
+    </script>
+    <div class="comic-footer">
+    Źródło: <a href="https://pl.wikipedia.org/wiki/Lista_elektrowni_w_Polsce" target="_blank" rel="noopener">https://pl.wikipedia.org/wiki/Lista_elektrowni_w_Polsce</a>
+  </div>
+</body>
+</html>
