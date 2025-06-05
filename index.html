@@ -202,6 +202,7 @@
             line-height: 1.5;
             border: 2.5px solid #ffffff;
             user-select: none;
+            transition: transform 0.2s, opacity 0.2s;
         }
         .corner-info-box .info-label {
             color: #ffffff;
@@ -213,6 +214,8 @@
             font-family: 'Roboto Mono', monospace;
             letter-spacing: 0.7px;
         }
+
+        /* CHOWANIE na telefonie */
         @media (max-width: 600px) {
             .corner-info-box {
                 min-width: 135px;
@@ -220,6 +223,16 @@
                 font-size: 0.92em;
                 right: 5vw;
                 bottom: 12px;
+                /* Ukryj domyślnie na telefonie */
+                display: none;
+            }
+            .corner-info-toggle {
+                display: block;
+            }
+        }
+        @media (min-width: 601px) {
+            .corner-info-toggle {
+                display: none;
             }
         }
         @media (max-width: 800px) {
@@ -229,6 +242,30 @@
             nav ul li { margin-bottom: 8px; }
             .hero-title { font-size: 2rem; }
             .hero-desc { font-size: 1rem; }
+        }
+
+        /* Toggle button style */
+        .corner-info-toggle {
+            position: fixed;
+            right: 22px;
+            bottom: 20px;
+            z-index: 10000;
+            background: #16233a;
+            color: #fff;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            font-size: 26px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px #0007;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .corner-info-toggle:active, .corner-info-toggle:focus {
+            background: #2764a9;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -249,7 +286,6 @@
                    <li><a href="Sprawność.html">Sprawność</a></li>
                    <li><a href="Kalkulator.html">Kalkulator</a></li>
                    <li><a href="Formularz kontaktowy.html">Formularz kontaktowy</a></li>
-                     
                 </ul>
             </nav>
         </div>
@@ -263,6 +299,8 @@
             </div>
         </div>
     </div>
+    <!-- Przycisk do pokazania okienka na telefonie -->
+    <button class="corner-info-toggle" id="toggleCornerInfo" title="Pokaż informacje"><i class="fa-regular fa-clock"></i></button>
     <div class="corner-info-box" id="cornerInfoBox">
         <div><span class="info-label"><i class="fa-regular fa-clock"></i> Zegar:</span> <span class="info-value" id="cornerClock"></span></div>
         <div><span class="info-label"><i class="fa-regular fa-calendar"></i> Data:</span> <span class="info-value" id="cornerDate"></span></div>
@@ -273,7 +311,6 @@
         Autor: <b>Justyna Furmańska </b> &mdash; Projekt strony internetowej wykonany w ramach zaliczenia przedmiotu MO: TIiSKwE na kierunku Energetyka.
     </footer>
     <script>
-
     function updateClockAndDate() {
         const now = new Date();
         const pad = n => n < 10 ? '0' + n : n;
@@ -319,6 +356,40 @@
         }
         setInterval(updateTime, 1000);
         updateTime();
+    })();
+
+    // Obsługa chowania/pokazywania info-boxa na telefonie
+    (function() {
+        const infoBox = document.getElementById('cornerInfoBox');
+        const toggleBtn = document.getElementById('toggleCornerInfo');
+        function isMobile() {
+            return window.innerWidth <= 600;
+        }
+        function showBox() {
+            infoBox.style.display = 'block';
+            toggleBtn.style.display = 'none';
+        }
+        function hideBox() {
+            infoBox.style.display = 'none';
+            toggleBtn.style.display = 'block';
+        }
+        function checkMobile() {
+            if (isMobile()) {
+                hideBox();
+            } else {
+                infoBox.style.display = 'block';
+                toggleBtn.style.display = 'none';
+            }
+        }
+        toggleBtn.addEventListener('click', showBox);
+        // Kliknięcie poza boxem na mobile chowa go
+        infoBox.addEventListener('click', function() {
+            if (isMobile()) {
+                hideBox();
+            }
+        });
+        window.addEventListener('resize', checkMobile);
+        checkMobile();
     })();
     </script>
 </body>
