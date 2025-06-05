@@ -358,7 +358,6 @@
         updateTime();
     })();
 
-    // Obsługa chowania/pokazywania info-boxa na telefonie
     (function() {
         const infoBox = document.getElementById('cornerInfoBox');
         const toggleBtn = document.getElementById('toggleCornerInfo');
@@ -382,7 +381,6 @@
             }
         }
         toggleBtn.addEventListener('click', showBox);
-        // Kliknięcie poza boxem na mobile chowa go
         infoBox.addEventListener('click', function() {
             if (isMobile()) {
                 hideBox();
