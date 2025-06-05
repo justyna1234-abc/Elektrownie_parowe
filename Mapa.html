@@ -54,14 +54,21 @@
             box-shadow: none;
             margin-top: -40px;
             margin-left: -50px;
+            width: 690px;
+            height: 680px;
+            max-width: 98vw;
+            max-height: 98vw;
         }
         #elektrownieimg {
             display:block;
             border-radius:10px;
             box-shadow: none;
             border: none;
-            max-width: 100vw;
-            height: auto;
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
         }
         .marker {
             pointer-events: none;
@@ -88,6 +95,7 @@
             top: -25px;
             white-space: nowrap;
             text-shadow: 1px 1px 3px #fff;
+            transition: font-size 0.2s;
         }
         #infoBox {
             display: none;
@@ -132,25 +140,30 @@
             text-align: center;
         }
         .comic-footer {
-      width: 100vw;
-      text-align: center;
-      color: #ffb547;
-      font-size: 0.7em;
-      margin-top: -40px;
-      margin-bottom: 0px;
-      letter-spacing: 0.2px;
-      padding-bottom: 18px;
-    }
-    .comic-footer a {
-      color: #fca326;
-      text-decoration: underline;
-    }
+            width: 100vw;
+            text-align: center;
+            color: #ffb547;
+            font-size: 0.7em;
+            margin-top: -40px;
+            margin-bottom: 0px;
+            letter-spacing: 0.2px;
+            padding-bottom: 18px;
+        }
+        .comic-footer a {
+            color: #fca326;
+            text-decoration: underline;
+        }
         @media (max-width: 900px) {
             .img-wrap {
                 max-width: 98vw;
+                max-height: 98vw;
+                width: 98vw;
+                height: auto;
             }
             #elektrownieimg {
                 max-width: 98vw;
+                max-height: 98vw;
+                width: 100%;
                 height: auto;
             }
         }
@@ -158,6 +171,16 @@
             #infoBox {
                 padding: 14px 2vw 14px 2vw;
                 min-width: unset;
+            }
+            .label {
+                font-size: 0.56em;
+                padding: 1px 3px;
+            }
+        }
+        @media (max-width: 420px) {
+            .label {
+                font-size: 0.40em;
+                padding: 0px 2px;
             }
         }
     </style>
@@ -168,31 +191,9 @@
         Kliknij w znacznik na mapie, aby zobaczyć informacje o wybranej elektrowni.
     </div>
     <div class="map-container">
-        <div class="img-wrap">
-            <img src="Mapa_Biała.png" width="690" height="680" usemap="#elektrownie" alt="Mapa Polski – elektrownie" id="elektrownieimg">
-            <div class="marker" style="left:87px; top:208px;"><span class="label" style="left:22px;">Dolna Odra</span></div>
-            <div class="marker" style="left:120px; top:395px;"><span class="label" style="left:22px;">Turów</span></div>
-            <div class="marker" style="left:275px; top:425px;"><span class="label" style="left:22px;">Opole</span></div>
-            <div class="marker" style="left:310px; top:470px;"><span class="label" style="left:-35px;top:26px">Rybnik</span></div>
-            <div class="marker" style="left:350px; top:356px;"><span class="label" style="left:22px;">Bełchatów</span></div>
-            <div class="marker" style="left:336px; top:468px;"><span class="label" style="left:16px; top:23px">Łaziska</span></div>
-            <div class="marker" style="left:295px; top:272px;"><span class="label" style="left:22px;">Pątnów</span></div>
-            <div class="marker" style="left:476px; top:332px;"><span class="label" style="left:15px;">Kozienice</span></div>
-            <div class="marker" style="left:465px; top:442px;"><span class="label" style="left:22px;">Połaniec</span></div>
-            <div class="marker" style="left:358px; top:458px;"><span class="label" style="left:-4px;top:-30px">Jaworzno III</span></div>
+        <div class="img-wrap" id="imgWrap">
+            <img src="Mapa_Biała.png" width="690" height="680" alt="Mapa Polski – elektrownie" id="elektrownieimg">
         </div>
-        <map name="elektrownie">
-            <area shape="circle" coords="97,218,14" href="#" alt="Dolna Odra" onclick="showInfo('dolnaodra'); return false;">
-            <area shape="circle" coords="130,405,14" href="#" alt="Turów" onclick="showInfo('turow'); return false;">
-            <area shape="circle" coords="285,435,14" href="#" alt="Opole" onclick="showInfo('opole'); return false;">
-            <area shape="circle" coords="320,480,14" href="#" alt="Rybnik" onclick="showInfo('rybnik'); return false;">
-            <area shape="circle" coords="360,366,12" href="#" alt="Bełchatów" onclick="showInfo('belchatow'); return false;">
-            <area shape="circle" coords="346,478,12" href="#" alt="Łaziska" onclick="showInfo('laziska'); return false;">
-            <area shape="circle" coords="305,282,12" href="#" alt="Pątnów" onclick="showInfo('patnow'); return false;">
-            <area shape="circle" coords="486,342,12" href="#" alt="Kozienice" onclick="showInfo('kozienice'); return false;">
-            <area shape="circle" coords="475,452,12" href="#" alt="Połaniec" onclick="showInfo('polaniec'); return false;">
-            <area shape="circle" coords="368,468,12" href="#" alt="Jaworzno III" onclick="showInfo('jaworzno'); return false;">
-        </map>
     </div>
     <div id="infoBox">
         <div id="infoText"></div>
@@ -241,6 +242,27 @@
                 desc: "Moc: 1535 MW<br>Lokalizacja: Jaworzno, śląskie"
             }
         };
+        const markers = [
+            {left: 87,  top: 208, label: "Dolna Odra",    lx: 22,  ly: 0,      key: "dolnaodra"},
+            {left: 120, top: 395, label: "Turów",         lx: 22,  ly: 0,      key: "turow"},
+            {left: 275, top: 425, label: "Opole",         lx: 22,  ly: 0,      key: "opole"},
+            {left: 310, top: 470, label: "Rybnik",        lx: -35, ly: 26,     key: "rybnik"},
+            {left: 350, top: 356, label: "Bełchatów",     lx: 22,  ly: 0,      key: "belchatow"},
+            {left: 336, top: 468, label: "Łaziska",       lx: 16,  ly: 23,     key: "laziska"},
+            {left: 295, top: 272, label: "Pątnów",        lx: 22,  ly: 0,      key: "patnow"},
+            {left: 476, top: 332, label: "Kozienice",     lx: 15,  ly: 0,      key: "kozienice"},
+            {left: 465, top: 442, label: "Połaniec",      lx: 22,  ly: 0,      key: "polaniec"},
+            {left: 358, top: 458, label: "Jaworzno III",  lx: -4,  ly: -30,    key: "jaworzno"}
+        ];
+        const baseWidth = 690, baseHeight = 680;
+        const markersPct = markers.map(m => ({
+            ...m,
+            leftPct: m.left / baseWidth * 100,
+            topPct: m.top / baseHeight * 100,
+            lxPct: m.lx / baseWidth * 100,
+            lyPct: m.ly / baseHeight * 100
+        }));
+
         function showInfo(key) {
             document.getElementById('infoText').innerHTML =
                 `<h2>${info[key].title}</h2>${info[key].desc}`;
@@ -252,9 +274,45 @@
         window.addEventListener('keydown', function(e) {
             if(e.key === "Escape") closeInfo();
         });
+
+        function renderMarkers() {
+            const wrap = document.getElementById('imgWrap');
+            wrap.querySelectorAll('.marker').forEach(e => e.remove());
+            const img = document.getElementById('elektrownieimg');
+            markersPct.forEach(m => {
+                const marker = document.createElement('div');
+                marker.className = 'marker';
+                marker.style.left = `calc(${m.leftPct}% - 10px)`;
+                marker.style.top = `calc(${m.topPct}% - 10px)`;
+                marker.style.width = '20px';
+                marker.style.height = '20px';
+                marker.style.pointerEvents = 'auto';
+                marker.title = info[m.key].title;
+                marker.tabIndex = 0;
+                marker.onclick = () => showInfo(m.key);
+                marker.onkeyup = e => { if(e.key === "Enter") showInfo(m.key); };
+
+                const label = document.createElement('span');
+                label.className = 'label';
+                label.textContent = m.label;
+                label.style.left = `calc(100% + ${m.lxPct}%)`;
+                label.style.top = `calc(-25px + ${m.lyPct}%)`;
+                marker.appendChild(label);
+
+                wrap.appendChild(marker);
+            });
+        }
+        function readyMarkers() {
+            renderMarkers();
+        }
+        document.getElementById('elektrownieimg').addEventListener('load', readyMarkers);
+        window.addEventListener('resize', readyMarkers);
+        if(document.getElementById('elektrownieimg').complete) {
+            readyMarkers();
+        }
     </script>
     <div class="comic-footer">
-    Źródło: <a href="https://pl.wikipedia.org/wiki/Lista_elektrowni_w_Polsce" target="_blank" rel="noopener">https://pl.wikipedia.org/wiki/Lista_elektrowni_w_Polsce</a>
-  </div>
+        Źródło: <a href="https://pl.wikipedia.org/wiki/Lista_elektrowni_w_Polsce" target="_blank" rel="noopener">https://pl.wikipedia.org/wiki/Lista_elektrowni_w_Polsce</a>
+    </div>
 </body>
 </html>
