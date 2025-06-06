@@ -24,6 +24,8 @@
       font-weight: 600;
       text-align: center;
       letter-spacing: 1px;
+      max-width: 98vw;
+      word-break: break-word;
     }
     .subtitle {
       color: #fca326;
@@ -33,6 +35,8 @@
       font-weight: 500;
       letter-spacing: 0.5px;
       text-shadow: 1px 1px 6px #0006;
+      max-width: 96vw;
+      word-break: break-word;
     }
     .canvas-box {
       box-sizing: border-box;
@@ -53,6 +57,7 @@
       margin-bottom: 2vw;
       margin-top: 0;
       overflow: hidden;
+      touch-action: manipulation;
     }
     #sideRectCanvas {
       width: 100%;
@@ -66,6 +71,7 @@
       background: transparent;
       outline: none;
       border: none;
+      touch-action: manipulation;
     }
     .info-box {
       position: absolute;
@@ -76,17 +82,54 @@
       color: #1d2950;
       border: 2.5px solid #fca326;
       border-radius: 8px;
-      padding: 16px 32px 16px 32px;
-      font-size: 1.18em;
+      padding: 16px 32px;
+      font-size: 1.14em;
       box-shadow: 0 4px 28px #fca32644;
       z-index: 20;
       opacity: 0.97;
       font-weight: 500;
       display: none;
       min-width: 190px;
-      max-width: 85vw;
+      max-width: 92vw;
       text-align: center;
       animation: fadeinInfo 0.25s;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      line-height: 1.35;
+      box-sizing: border-box;
+      pointer-events: auto;
+    }
+    .info-box.visible {
+      display: flex !important;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: fixed !important;
+      left: 50%;
+      top: 50%;
+      max-width: 98vw !important;
+      width: 95vw !important;
+      min-width: 0;
+      min-height: unset;
+      transform: translate(-50%,-50%) !important;
+      padding: 18px 3vw 18px 3vw !important;
+      font-size: 1.01em !important;
+      z-index: 1003;
+      word-break: break-word;
+      overflow-y: auto;
+      overflow-x: visible;
+      max-height: 88vh;
+    }
+    .info-backdrop {
+      display: none;
+    }
+    .info-backdrop.visible {
+      display: block;
+      position: fixed;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.26);
+      z-index: 1002;
+      pointer-events: auto;
     }
     @keyframes fadeinInfo {
       from { opacity: 0; transform: translate(-50%,-53%) scale(0.92);}
@@ -110,37 +153,44 @@
     .info-close:hover {
       color: #c00;
     }
+    @media (max-width: 900px) {
+      .canvas-box { max-width: 99vw; }
+    }
     @media (max-width: 600px) {
-      .canvas-box { min-height: 100px; }
-      #sideRectCanvas { min-height: 100px; }
-      .info-box { font-size: 1em; padding: 11px 10vw 11px 10vw;}
+      .canvas-box { min-height: 90px; padding: 0; }
+      #sideRectCanvas { min-height: 90px; }
+      .info-box, .info-box.visible { font-size: 0.96em !important; padding: 8px 2vw 8px 2vw !important; max-width: 99vw !important; width: 98vw !important;}
+      h1 { font-size: 1.13em; margin-top: 14px; }
+      .subtitle { font-size: 1em; margin-bottom: 13px; }
+    }
+    @media (max-width: 400px) {
+      .info-box, .info-box.visible { font-size: 0.83em !important; }
+      h1 { font-size: 1em; }
     }
   </style>
 </head>
 <body>
-  <h1>Schemat siłowni parowej </h1>
-  <div class="subtitle">Klikini na symbol w schemacie i dowiedz się jaką pełni funkcję dany element.</div>
+  <h1>Schemat siłowni parowej</h1>
+  <div class="subtitle">Kliknij na symbol w schemacie i dowiedz się jaką pełni funkcję dany element.</div>
   <div class="canvas-box">
     <canvas id="sideRectCanvas" width="900" height="540"></canvas>
     <div id="infoBox" class="info-box">
       <button class="info-close" id="infoClose" title="Zamknij">×</button>
       <span id="infoMsg"></span>
     </div>
+    <div id="infoBackdrop" class="info-backdrop"></div>
   </div>
   <script>
     const BASE_W = 900, BASE_H = 540;
     const DRAWING_SCALE = 0.90;
     const DRAWING_OFFSET_X = -35;
     const DRAWING_OFFSET_Y = -30;
-
     const canvas = document.getElementById('sideRectCanvas');
     const ctx = canvas.getContext('2d');
     let highlightedShape = null;
-
     const offsetX = 90, offsetY = 36;
     const rectWidth = 80, rectHeight = 140;
     const rectX = offsetX, rectY = 120 + offsetY;
-
     const deltaX = 130;
     const trapShort = 77;
     const trapLong = 148;
@@ -150,7 +200,6 @@
     const B = {x: trapX, y: trapY + trapShort/2};
     const C = {x: trapX + trapHeight, y: trapY + trapLong/2};
     const D = {x: trapX + trapHeight, y: trapY - trapLong/2};
-
     const rectW = 62;
     const rectH = 110;
     const radius = 22;
@@ -160,7 +209,6 @@
     const connectY = downLineStartY + 120;
     const roundedRectX = connectX - rectW / 2;
     const roundedRectY = connectY - rectH / 2;
-
     const leftRectMidBottomX = rectX + rectWidth / 2;
     const leftRectMidBottomY = rectY + rectHeight;
     const circleCenterX = leftRectMidBottomX;
@@ -168,13 +216,11 @@
     const circleRadius = 26;
     const circleBottomY = circleCenterY + circleRadius;
     const circleLineLen = 120;
-
     const middleRightX = (C.x + D.x) / 2;
     const middleRightY = (C.y + D.y) / 2;
     const sideLineLen = 80;
     const circle2CenterX = middleRightX + sideLineLen;
     const circle2CenterY = middleRightY;
-
     const roundedRectMidBottomX = roundedRectX + rectW / 2;
     const roundedRectMidBottomY = roundedRectY + rectH;
 
@@ -564,19 +610,42 @@
 
     function showInfo(msg, whichShape) {
       const box = document.getElementById('infoBox');
+      const backdrop = document.getElementById('infoBackdrop');
       const msgSpan = document.getElementById('infoMsg');
       msgSpan.textContent = msg;
-      box.style.display = 'block';
+      if(window.innerWidth < 700) {
+        box.classList.add('visible');
+        backdrop.classList.add('visible');
+        document.body.style.overflow = "hidden";
+      } else {
+        box.classList.remove('visible');
+        backdrop.classList.remove('visible');
+        document.body.style.overflow = "";
+        box.style.display = 'block';
+      }
       box.style.opacity = '0.97';
       highlightedShape = whichShape;
       drawAll();
+      setTimeout(() => {
+        if (window.innerWidth < 700) {
+          box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 20);
     }
 
-    document.getElementById('infoClose').onclick = function() {
-      document.getElementById('infoBox').style.display = 'none';
+    function hideInfoBox() {
+      const box = document.getElementById('infoBox');
+      const backdrop = document.getElementById('infoBackdrop');
+      box.classList.remove('visible');
+      backdrop.classList.remove('visible');
+      box.style.display = 'none';
+      document.body.style.overflow = "";
       highlightedShape = null;
       drawAll();
-    };
+    }
+
+    document.getElementById('infoClose').onclick = hideInfoBox;
+    document.getElementById('infoBackdrop').onclick = hideInfoBox;
 
     canvas.addEventListener('click', function(e) {
       const rawScale = Math.min(canvas.offsetWidth / BASE_W, canvas.offsetHeight / BASE_H);
@@ -643,6 +712,7 @@
       drawAll();
     }
     window.addEventListener('resize', fitCanvas);
+    window.addEventListener('orientationchange', fitCanvas);
     fitCanvas();
   </script>
 </body>
